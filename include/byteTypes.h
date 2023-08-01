@@ -6,6 +6,7 @@ extern "C"{
 #endif
 
 #include <stdbool.h>
+#include <byteDefines.h>
 
 
 
@@ -15,11 +16,12 @@ typedef struct _ByteStream{
     size_t cursor;
 }ByteStream;
 
-typedef struct _EncodedStr{
+
+typedef struct _Str{
     unsigned char encoding;
     unsigned char *str;
     size_t strSize;
-}EncodedStr;
+}Str;
 
 #ifdef __cplusplus
 } //extern c end

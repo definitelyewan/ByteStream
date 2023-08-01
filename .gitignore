@@ -1,0 +1,6 @@
+encoding.c
+main
+*.o
+*.so
+*.a
+output.txt

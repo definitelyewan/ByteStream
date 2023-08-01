@@ -1,0 +1,21 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/ewan/projects/ByteStream",
+            "binaryPath": "/home/ewan/projects/ByteStream/main",
+            "binaryArgs": []
+        }
+    ],
+    "files.associations": {
+        "stdbool.h": "c",
+        "*.rmd": "markdown",
+        "id3.h": "c",
+        "id3types.h": "c",
+        "stdint.h": "c",
+        "id3defines.h": "c",
+        "limits.h": "c",
+        "bytetypes.h": "c",
+        "byteunicode.h": "c",
+        "setjmp.h": "c"
+    }
+}

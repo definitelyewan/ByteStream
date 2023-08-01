@@ -1,15 +1,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "byteDefines.h"
-#include "byteStream.h"
-#include "byteTypes.h"
+#include <byteDefines.h>
+#include <byteStream.h>
+#include <byteTypes.h>
+#include <byteUnicode.h>
 
 ByteStream *byteStreamCreate(unsigned char *buffer, size_t bufferSize){
-
-    if(buffer == NULL){
-        return NULL;
-    }
     
     if(bufferSize == 0){
         return NULL;
@@ -17,13 +14,63 @@ ByteStream *byteStreamCreate(unsigned char *buffer, size_t bufferSize){
 
 
     ByteStream *stream = malloc(sizeof(ByteStream));
+    unsigned char *tmp = NULL;
 
-    stream->buffer = calloc(sizeof(unsigned char), bufferSize);
+    tmp = calloc(sizeof(unsigned char), bufferSize + BYTE_PADDING);
+    
+    if(buffer != NULL){
+        memcpy(tmp, buffer, bufferSize);
+    }
+
+    stream->buffer = tmp;
     stream->bufferSize = bufferSize;
     stream->cursor = 0;
 
-    memcpy(stream->buffer, buffer, bufferSize);
+    
     return stream;
+}
+
+void byteStreamResize(ByteStream *stream, size_t newBufferSize){
+
+    if(stream == NULL || newBufferSize == 0){
+        return;
+    }
+
+    unsigned char *tmp = NULL;
+
+    tmp = calloc(sizeof(unsigned char), newBufferSize);
+
+    if(newBufferSize > stream->bufferSize){
+        
+        //copy old buffer
+        for(size_t i = 0; i < stream->bufferSize; i++){
+            tmp[i] = stream->buffer[i];
+        }
+
+        //add 0s
+        for(size_t i = stream->bufferSize; i < newBufferSize; i++){
+            tmp[i] = 0;
+        }
+
+        free(stream->buffer);
+        stream->buffer = tmp;
+        stream->bufferSize = newBufferSize;
+    
+    }else if(newBufferSize < stream->bufferSize){
+        memcpy(tmp, stream->buffer, newBufferSize);
+
+        free(stream->buffer);
+        stream->buffer = tmp;
+
+
+        if(stream->cursor > newBufferSize){
+            stream->cursor = newBufferSize;
+        }
+
+        stream->bufferSize = newBufferSize;
+    }else{
+        free(tmp);
+    }
 }
 
 void byteStreamFree(ByteStream *toDelete){
@@ -34,9 +81,12 @@ void byteStreamFree(ByteStream *toDelete){
 
     if(toDelete->buffer){
         free(toDelete->buffer);
-        toDelete->cursor = 0;
-        toDelete->bufferSize = 0;
+        toDelete->buffer = NULL;
     }
+
+    toDelete->cursor = 0;
+    toDelete->bufferSize = 0;
+
 }
 
 void byteStreamDestroy(ByteStream *toDelete){
@@ -44,76 +94,136 @@ void byteStreamDestroy(ByteStream *toDelete){
     if(toDelete != NULL){
         byteStreamFree(toDelete);
         free(toDelete);
+        toDelete = NULL;
     }
 }
 
-void byteStreamRead(ByteStream *stream, unsigned char *dest, size_t size){
+bool byteStreamRead(ByteStream *stream, unsigned char *dest, size_t size){
 
-    if(stream == NULL){
-        dest = NULL;
-        return;
+    if(stream == NULL || size == 0){
+        return false;
     }
 
-    if(size == 0){
-        dest = NULL;
-        return;
-    }
-    if(size > stream->bufferSize){
-        dest = NULL;
-        return;
+    size_t wSize = size;
+
+    if(stream->cursor + size > stream->bufferSize){
+        wSize = stream->bufferSize - stream->cursor;
     }
 
-    memcpy(dest, id3ReaderCursor(stream), size);
-    stream->cursor = stream->cursor + size;
+    if(wSize == 0){
+        return false;
+    }
+    
+
+    memcpy(dest, byteStreamCursor(stream), wSize);
+    stream->cursor = stream->cursor + wSize;
+    return true;
 }
 
-void byteStreamSeek(ByteStream *stream, size_t dest, const int seekOption){
+bool byteStreamSeek(ByteStream *stream, size_t dest, const int seekOption){
+
+    bool ret = false;
 
     if(stream == NULL){
-        return;
+        return ret;
     }
     
     switch(seekOption){
         
         //reset to the beginning
         case SEEK_SET:
-            stream->cursor = dest;
+            if(!(dest > stream->bufferSize)){
+                stream->cursor = dest;
+                ret = true;
+            }
             break;
 
         //use dest as new cursor    
         case SEEK_CUR:
-            stream->cursor = stream->cursor + dest;
+            if(!(stream->cursor + dest > stream->bufferSize)){
+                stream->cursor = stream->cursor + dest;
+                ret = true;
+            }
+
             break;
         
         //set cursor to end of buffer
         case SEEK_END:
-            stream->cursor = stream->bufferSize - dest;
+            if(!(dest > stream->bufferSize)){
+                stream->cursor = stream->bufferSize - dest;
+                ret = true;
+            }
+
             break;
 
         default:
-            break;
+            return ret;
     }
 
+    return ret;
 }
 
-void byteStreamReadUntil(ByteStream *stream, unsigned char *dest, unsigned char delimiter){
+unsigned char *byteStreamReadUntil(ByteStream *stream, unsigned char delimiter){
 
     if(stream == NULL){
-        return;
+        return NULL;
     }
 
-    size_t got = 0;
     unsigned char *ret = NULL;
 
     for(size_t i = stream->cursor; i < stream->bufferSize; i++){
         if(stream->buffer[i] == delimiter){
-            byteStreamRead(stream, ret, i);
+            ret = calloc(sizeof(unsigned char), i + BYTE_PADDING);
+            byteStreamRead(stream, ret, i + 1);
+            break;
         }
     }
-
     
-
     return ret;
+}
+
+void byteStreamSearchAndReplace(ByteStream *stream, unsigned char *pattern, size_t patternSize, unsigned char *replace, size_t replaceSize){
+
+    if(stream == NULL || pattern == NULL || patternSize == 0){
+        return;
+    }
+
+    //preprocess
+    size_t table[BYTE_HORSPOOL_TABLE_SIZE];
+    
+    //makes the shift table
+    for(int i = 0; i < BYTE_HORSPOOL_TABLE_SIZE; i++){
+        table[i] = patternSize;
+    }
+
+    //calculate the shift values for horspool
+    for(int i = 0; i < patternSize - 1; i++){
+        table[(size_t)pattern[i]] = patternSize - i - 1;
+    }
+
+    //horspool algorithm
+    size_t i = patternSize - 1;
+    while(i < stream->bufferSize){
+        
+        size_t k = 0;
+
+        while((k < patternSize) && (pattern[patternSize - 1 - k] == stream->buffer[i - k])){
+            k++;
+        }
+
+        //replace match
+        if(k == patternSize){
+            for (size_t j = 0; j < patternSize; j++) {
+                if(j < replaceSize){
+                    stream->buffer[i - j] = replace[j];
+                }else{
+                    stream->buffer[i - j] = 0;
+                }
+            }
+        }
+          
+        i = i + table[(size_t)stream->buffer[i]];
+    }
 }
 
 unsigned char *byteStreamCursor(ByteStream *stream){
@@ -130,12 +240,146 @@ unsigned char *byteStreamCursor(ByteStream *stream){
     return stream->buffer + stream->cursor; 
 }
 
-unsigned char byteStreamGetCh(ByteStream *stream){
+int byteStreamGetCh(ByteStream *stream){
 
     if(stream == NULL){
         return EOF;
     }
 
     return byteStreamCursor(stream) == NULL ? EOF: byteStreamCursor(stream)[0];
+}
+
+bool byteStreamWrite(ByteStream *stream, unsigned char *src, size_t srcSize){
+
+    if(stream == NULL || src == NULL || srcSize > stream->bufferSize || srcSize  == 0){
+        return false;
+    }
+
+    size_t wSize = srcSize;
+
+    //prevent overflow
+    if(srcSize + stream->cursor > stream->bufferSize){
+        wSize = stream->bufferSize - stream->cursor;
+    }
+
+    memcpy(stream->buffer + stream->cursor, src, wSize);
+    stream->cursor += wSize;
+    return true;
+}
+
+bool byteStreamWriteAtPosition(ByteStream *stream, unsigned char *src, size_t srcSize, size_t pos){
+
+    if(stream == NULL || pos > stream->bufferSize || src == NULL){
+        return false;
+    }
+
+    size_t wSize = srcSize;
+
+    //prevent overflow
+    if(srcSize + pos > stream->bufferSize){
+        wSize = stream->bufferSize - pos;
+    }
+
+    memcpy((stream->buffer) + pos, src, wSize);
+    return true;
+
+}
+
+unsigned char *byteStreamReturnAscii(ByteStream *stream, size_t *outLen){
+
+    if(stream == NULL){
+        *outLen = 0;
+        return NULL;
+    }
+
+    size_t len = 0;
+    unsigned char *ret = NULL;
+
+    len = byteStrlen(BYTE_ASCII, byteStreamCursor(stream));
+
+    if(len){
+        len++;
+        ret = calloc(sizeof(unsigned char), len + BYTE_PADDING);
+        byteStreamRead(stream, ret, len);   
+    }
+
+    //read no bytes
+    if(ret == NULL){
+        len = 0;
+    }
+
+    *outLen = len;
+    return ret;
+}
+
+unsigned char *byteStreamReturnLatin1(ByteStream *stream, size_t *outLen){
+    //just extended ascii and its terminated the same way
+    return byteStreamReturnAscii(stream, outLen);
+}
+
+unsigned char *byteStreamReturnUtf8(ByteStream *stream, size_t *outLen){
+    //terminated the same way
+    return byteStreamReturnAscii(stream, outLen);
+}
+
+unsigned char *byteStreamReturnUtf16(ByteStream *stream, size_t *outLen){
+
+    if(stream == NULL){
+        *outLen = 0;
+        return NULL;
+    }
+
+    size_t len = 0;
+    unsigned char *ret = NULL;
+
+    //would work the same if LE was given instead
+    len = byteStrlen(BYTE_UTF16BE, byteStreamCursor(stream));
+
+    if(len){
+        ret = calloc(sizeof(unsigned char), len + BYTE_PADDING);
+        byteStreamRead(stream, ret, len + 1);   
+    }
+
+    //read no bytes
+    if(ret == NULL){
+        len = 0;
+    }
+
+    *outLen = len;
+    return ret;
+
+
+}
+
+void byteStreamPrintf(const char *formatSpecifier, ByteStream *stream){
+
+    if(stream == NULL){
+        printf("\n");
+        return;
+    }
+
+    if(stream->cursor == stream->bufferSize){
+        printf("[]\n");
+        return;
+    }
+
+    size_t size = stream->bufferSize - stream->cursor;
+    
+    if(size == 0){
+        printf("[]\n");
+        return;
+    }
+
+    printf("[");
+    for(size_t i = stream->cursor; i < stream->bufferSize; i++){
+        if(strncmp("%x", formatSpecifier, 3) == 0){
+            printf("[%x]",stream->buffer[i]);
+        }else if(strncmp("%c", formatSpecifier, 3) == 0){
+            printf("[%c]",stream->buffer[i]);   
+        }else if(strncmp("%d", formatSpecifier, 3) == 0){
+            printf("[%d]",stream->buffer[i]);
+        }
+    }
+    printf("]\n");
 
 }

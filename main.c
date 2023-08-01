@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "byteStream.h"
+#include <unistd.h>
+#include <stdbool.h>
+#include <byteStream.h>
+#include <byteUnicode.h>
 
+#define MAX_SIZE 15000
+#define W 100
 
-//w3 ref
-//https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwidoOa53ZaAAxVag4kEHVTXDzMQFnoECBwQAQ&url=https%3A%2F%2Fdev.w3.org%2FXML%2Fencoding.c&usg=AOvVaw2LrNRpxyvCE5_LxXUyIeMC&opi=89978449
 int main(int argc, char *argv[]){
-
-
-
     if(argc != 2){
         perror("usage: ./main <file>");
         exit(EXIT_FAILURE);
@@ -40,8 +40,35 @@ int main(int argc, char *argv[]){
 
     stream = byteStreamCreate(fileContent, fileSize);
     free(fileContent);
-    byteStreamDestroy(stream);
+    
+    //byteStreamSearchAndReplace(stream, (unsigned char *)" ", 1, 0x00);
 
-    fclose(fp);
+    while(byteStreamGetCh(stream) != EOF){
+        size_t inlen = 0;
+        size_t outlen = 0;
+        unsigned char *str = byteStreamReturnAscii(stream, &inlen);//byteStreamReturnUtf16(stream, &len);
+        unsigned char *newStr = NULL;
+
+        if(str != NULL && inlen > 0){
+            
+            //convert
+            outlen = 4 * inlen;
+            bool v = byteConvertTextFormat(str, BYTE_ASCII, &inlen, &newStr, BYTE_UTF16LE, &outlen);
+            free(str);
+            /*
+            if(newStr != NULL && v == true){
+                fwrite(newStr, 1, outlen - BYTE_PADDING, fp );
+                fclose(fp);
+                free(newStr);
+            }else if(newStr != NULL){
+                free(newStr);
+            }
+            */
+        }
+
+        
+    }
+    
+    byteStreamDestroy(stream);
     return 0;
 }
