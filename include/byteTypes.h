@@ -8,8 +8,6 @@ extern "C"{
 #include <stdbool.h>
 #include <byteDefines.h>
 
-
-
 typedef struct _ByteStream{
     unsigned char *buffer;
     size_t bufferSize;

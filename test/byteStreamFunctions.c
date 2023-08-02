@@ -8,7 +8,7 @@
 #include <string.h>
 #include <byteStream.h>
 
-static void byteStreamCreate_NormalSetup(void **state){
+static void byteStreamCreate_Normal_Setup(void **state){
     (void) state; /* unused */
 
     ByteStream *stream = NULL;
@@ -28,7 +28,7 @@ static void byteStreamCreate_NormalSetup(void **state){
 
 }
 
-static void byteStreamCreate_NormalSetup2(void **state){
+static void byteStreamCreate_Normal2_Setup(void **state){
     (void) state; /* unused */
 
     ByteStream *stream = NULL;
@@ -46,7 +46,7 @@ static void byteStreamCreate_NormalSetup2(void **state){
 
 }
 
-static void byteStreamCreate_SmallSizeSetup(void **state){
+static void byteStreamCreate_SmallSize_Setup(void **state){
     (void) state; /* unused */
 
     ByteStream *stream = NULL;
@@ -68,7 +68,7 @@ static void byteStreamCreate_SmallSizeSetup(void **state){
     free(stream);
 }
 
-static void byteStreamCreate_NoSizeSetup(void **state){
+static void byteStreamCreate_NoSize_Setup(void **state){
     (void) state; /* unused */
 
     ByteStream *stream = NULL;
@@ -80,7 +80,7 @@ static void byteStreamCreate_NoSizeSetup(void **state){
     assert_null(stream);
 }
 
-static void byteStreamFree_NormalSetup(void **state){
+static void byteStreamFree_Normal_Setup(void **state){
     (void) state; /* unused */
 
     ByteStream *stream = byteStreamCreate((unsigned char *)"test function", 14);
@@ -94,7 +94,7 @@ static void byteStreamFree_NormalSetup(void **state){
     free(stream);
 }
 
-static void byteStreamFree_NoBufferFreeSetup(void **state){
+static void byteStreamFree_NoBufferFree_Setup(void **state){
     (void) state; /* unused */
 
     ByteStream *stream = byteStreamCreate(NULL, 15);
@@ -109,7 +109,7 @@ static void byteStreamFree_NoBufferFreeSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStreamResize_IncreaseSetup(void **state){
+static void byteStreamResize_Increase_Setup(void **state){
     (void) state; /* unused */
 
     ByteStream *stream = byteStreamCreate(NULL, 100);
@@ -123,7 +123,7 @@ static void byteStreamResize_IncreaseSetup(void **state){
     
 }
 
-static void byteStreamResize_DecreaseSetup(void **state){
+static void byteStreamResize_Decrease_Setup(void **state){
     (void) state; /* unused */
 
     ByteStream *stream = byteStreamCreate(NULL, 100);
@@ -136,7 +136,7 @@ static void byteStreamResize_DecreaseSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStreamResize_FailSetup(void **state){
+static void byteStreamResize_Fail_Setup(void **state){
     (void) state; /* unused */
 
     ByteStream *stream = byteStreamCreate(NULL, 100);
@@ -149,7 +149,7 @@ static void byteStreamResize_FailSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_ReadNothingSetup(void **state){
+static void byteStreamRead_ReadNothing_Setup(void **state){
     (void) state; /* unused */
 
 
@@ -166,7 +166,7 @@ static void byteStream_ReadNothingSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_ReadTooMuchSetup(void **state){
+static void byteStreamRead_ReadTooMuch_Setup(void **state){
     (void) state; /* unused */
 
 
@@ -186,7 +186,7 @@ static void byteStream_ReadTooMuchSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_ReadWithMaxCursorSetup(void **state){
+static void byteStreamRead_ReadWithMaxCursor_Setup(void **state){
     (void) state; /* unused */
 
 
@@ -205,7 +205,7 @@ static void byteStream_ReadWithMaxCursorSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_ReadHalfBlockSetup(void **state){
+static void byteStreamRead_HalfBlock_Setup(void **state){
     (void) state; /* unused */
 
     unsigned char b[] = "this is a binary block?";
@@ -222,7 +222,7 @@ static void byteStream_ReadHalfBlockSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_NormalReadSetup(void **state){
+static void byteStreamRead_Normal_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "this is a binary block?";
@@ -238,7 +238,7 @@ static void byteStream_NormalReadSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_SeekSetSetup(void **state){
+static void byteStreamSeek_Set_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "seek testing";
@@ -253,7 +253,7 @@ static void byteStream_SeekSetSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_SeekSetBigSetup(void **state){
+static void byteStreamSeek_SetBig_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "seek testing";
@@ -268,7 +268,7 @@ static void byteStream_SeekSetBigSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_SeekCurSetup(void **state){
+static void byteStreamSeek_Cur_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "seek testing";
@@ -284,7 +284,7 @@ static void byteStream_SeekCurSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_SeekCurBigSetup(void **state){
+static void byteStreamSeek_CurBig_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "seek testing";
@@ -300,7 +300,7 @@ static void byteStream_SeekCurBigSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_SeekEndBigSetup(void **state){
+static void byteStreamSeek_EndBig_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "seek testing";
@@ -315,7 +315,7 @@ static void byteStream_SeekEndBigSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_SeekEndSetup(void **state){
+static void byteStreamSeek_End_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "seek testing";
@@ -330,7 +330,7 @@ static void byteStream_SeekEndSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_ReadUntilCharacterSetup(void **state){
+static void byteStreamReadUntil_SpecificCharacter_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "read me!!! you wont get passed this * how?";
@@ -351,7 +351,7 @@ static void byteStream_ReadUntilCharacterSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_ReadUntilCharacterNotFoundSetup(void **state){
+static void byteStreamReadUntil_CharacterNotFound_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "read me!!! you wont get passed this * how?";
@@ -367,7 +367,7 @@ static void byteStream_ReadUntilCharacterNotFoundSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_SearchAndReplaceSetup(void **state){
+static void byteStreamSearchAndReplace_SearchAndReplace_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "and anD aNd Notand And";
@@ -383,7 +383,7 @@ static void byteStream_SearchAndReplaceSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_SearchAndReplaceNotFoundSetup(void **state){
+static void byteStreamSearchAndReplace_NotFound_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "and anD aNd Notand And";
@@ -398,7 +398,7 @@ static void byteStream_SearchAndReplaceNotFoundSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_SearchAndReplaceShortPatternSetup(void **state){
+static void byteStreamSearchAndReplace_ShortPattern_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "and anD aNd Notand And";
@@ -420,7 +420,7 @@ static void byteStream_SearchAndReplaceShortPatternSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_SearchAndReplaceShortReplaceSetup(void **state){
+static void byteStreamSearchAndReplace_ShortReplace_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "and anD aNd Notand And";
@@ -435,7 +435,7 @@ static void byteStream_SearchAndReplaceShortReplaceSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_CursorSetup(void **state){
+static void byteStreamCursor_Normal_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "0123456789";
@@ -452,7 +452,7 @@ static void byteStream_CursorSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_GetChSetup(void **state){
+static void byteStreamGetCh_Normal_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "0123456789";
@@ -469,7 +469,7 @@ static void byteStream_GetChSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_GetChEOFSetup(void **state){
+static void byteStreamGetCh_EOF_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "0123456789";
@@ -484,7 +484,7 @@ static void byteStream_GetChEOFSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_WriteSetup(void **state){
+static void byteStreamWrite_Normal_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "0123456789";
@@ -500,7 +500,7 @@ static void byteStream_WriteSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_WriteMidSetup(void **state){
+static void byteStreamWrite_AtMid_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "0123456789";
@@ -516,7 +516,7 @@ static void byteStream_WriteMidSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_WriteEndSetup(void **state){
+static void byteStreamWrite_AtEnd_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "0123456789";
@@ -532,7 +532,7 @@ static void byteStream_WriteEndSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_WriteErrSetup(void **state){
+static void byteStreamWrite_Err_Setup(void **state){
     (void) state; //unused
 
     bool v = byteStreamWrite(NULL, NULL, 9999);
@@ -540,7 +540,7 @@ static void byteStream_WriteErrSetup(void **state){
     assert_false(v);
 }
 
-static void byteStream_WriteAtPositionErrSetup(void **state){
+static void byteStreamWriteAtPosition_Err_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "0123456789";
@@ -555,7 +555,7 @@ static void byteStream_WriteAtPositionErrSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_WriteAtPositionStartSetup(void **state){
+static void byteStreamWriteAtPosition_Start_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "0123456789";
@@ -570,7 +570,7 @@ static void byteStream_WriteAtPositionStartSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_WriteAtPositionMidSetup(void **state){
+static void byteStreamWriteAtPosition_Mid_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "0123456789";
@@ -586,7 +586,7 @@ static void byteStream_WriteAtPositionMidSetup(void **state){
 
 }
 
-static void byteStream_ReturnAsciiWordSetup(void **state){
+static void byteStreamReturnAscii_Word_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "ascii\0word\0test";
@@ -614,7 +614,7 @@ static void byteStream_ReturnAsciiWordSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_ReturnAsciiFullBufferSetup(void **state){
+static void byteStreamReturnAscii_FullBuffer_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "ascii word test";
@@ -632,7 +632,7 @@ static void byteStream_ReturnAsciiFullBufferSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_ReturnAsciiFailOnDoubleNullSetup(void **state){
+static void byteStreamReturnAscii_FailOnDoubleNull_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "ascii\0\0test";
@@ -655,7 +655,7 @@ static void byteStream_ReturnAsciiFailOnDoubleNullSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_ReturnAsciiFailWithNoBytesSetup(void **state){
+static void byteStreamReturnAscii_FailWithNoBytes_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "\0\0";
@@ -673,7 +673,7 @@ static void byteStream_ReturnAsciiFailWithNoBytesSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_ReturnUtf16WordSetup(void **state){
+static void byteStreamReturnUtf16_Word_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "\0u\0t\0f\0\0w\0o\0r\0d\0\0t\0e\0s\0t\0\0";
@@ -701,7 +701,7 @@ static void byteStream_ReturnUtf16WordSetup(void **state){
     byteStreamDestroy(stream);
 }
 
-static void byteStream_ReturnUtf16FullBufferSetup(void **state){
+static void byteStreamReturnUtf16_FullBuffer_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "u\0t\0f\0 \0w\0o\0r\0d\0 \0t\0e\0s\0t\0\0";
@@ -723,63 +723,63 @@ int main(){
     
     const struct CMUnitTest tests[] = {
         //byteStreamCreate tests
-        cmocka_unit_test(byteStreamCreate_NormalSetup),
-        cmocka_unit_test(byteStreamCreate_NormalSetup2),
-        cmocka_unit_test(byteStreamCreate_SmallSizeSetup),
-        cmocka_unit_test(byteStreamCreate_NoSizeSetup),
+        cmocka_unit_test(byteStreamCreate_Normal_Setup),
+        cmocka_unit_test(byteStreamCreate_Normal2_Setup),
+        cmocka_unit_test(byteStreamCreate_SmallSize_Setup),
+        cmocka_unit_test(byteStreamCreate_NoSize_Setup),
         //byteStreamFree tests
-        cmocka_unit_test(byteStreamFree_NormalSetup),
-        cmocka_unit_test(byteStreamFree_NoBufferFreeSetup),
+        cmocka_unit_test(byteStreamFree_Normal_Setup),
+        cmocka_unit_test(byteStreamFree_NoBufferFree_Setup),
         //byteStreamResize tests
-        cmocka_unit_test(byteStreamResize_IncreaseSetup),
-        cmocka_unit_test(byteStreamResize_DecreaseSetup),
-        cmocka_unit_test(byteStreamResize_FailSetup),
+        cmocka_unit_test(byteStreamResize_Increase_Setup),
+        cmocka_unit_test(byteStreamResize_Decrease_Setup),
+        cmocka_unit_test(byteStreamResize_Fail_Setup),
         //byteStreamRead tests
-        cmocka_unit_test(byteStream_ReadNothingSetup),
-        cmocka_unit_test(byteStream_ReadTooMuchSetup),
-        cmocka_unit_test(byteStream_ReadWithMaxCursorSetup),
-        cmocka_unit_test(byteStream_ReadHalfBlockSetup),
-        cmocka_unit_test(byteStream_NormalReadSetup),
+        cmocka_unit_test(byteStreamRead_ReadNothing_Setup),
+        cmocka_unit_test(byteStreamRead_ReadTooMuch_Setup),
+        cmocka_unit_test(byteStreamRead_ReadWithMaxCursor_Setup),
+        cmocka_unit_test(byteStreamRead_HalfBlock_Setup),
+        cmocka_unit_test(byteStreamRead_Normal_Setup),
         //byteStreamSeek tests
-        cmocka_unit_test(byteStream_SeekSetSetup),
-        cmocka_unit_test(byteStream_SeekSetBigSetup),
-        cmocka_unit_test(byteStream_SeekCurSetup),
-        cmocka_unit_test(byteStream_SeekCurBigSetup),
-        cmocka_unit_test(byteStream_SeekEndBigSetup),
-        cmocka_unit_test(byteStream_SeekEndSetup),
+        cmocka_unit_test(byteStreamSeek_Set_Setup),
+        cmocka_unit_test(byteStreamSeek_SetBig_Setup),
+        cmocka_unit_test(byteStreamSeek_Cur_Setup),
+        cmocka_unit_test(byteStreamSeek_CurBig_Setup),
+        cmocka_unit_test(byteStreamSeek_EndBig_Setup),
+        cmocka_unit_test(byteStreamSeek_End_Setup),
         //byteStreamReadUntil test
-        cmocka_unit_test(byteStream_ReadUntilCharacterSetup),
-        cmocka_unit_test(byteStream_ReadUntilCharacterNotFoundSetup),
+        cmocka_unit_test(byteStreamReadUntil_SpecificCharacter_Setup),
+        cmocka_unit_test(byteStreamReadUntil_CharacterNotFound_Setup),
         //byteStreamSearchAndReplace test
-        cmocka_unit_test(byteStream_SearchAndReplaceSetup),
-        cmocka_unit_test(byteStream_SearchAndReplaceNotFoundSetup),
-        cmocka_unit_test(byteStream_SearchAndReplaceShortPatternSetup),
-        cmocka_unit_test(byteStream_SearchAndReplaceShortReplaceSetup),
+        cmocka_unit_test(byteStreamSearchAndReplace_SearchAndReplace_Setup),
+        cmocka_unit_test(byteStreamSearchAndReplace_NotFound_Setup),
+        cmocka_unit_test(byteStreamSearchAndReplace_ShortPattern_Setup),
+        cmocka_unit_test(byteStreamSearchAndReplace_ShortReplace_Setup),
         //byteStreamCursor test
-        cmocka_unit_test(byteStream_CursorSetup),
+        cmocka_unit_test(byteStreamCursor_Normal_Setup),
         //byteStreamGetCh test
-        cmocka_unit_test(byteStream_GetChSetup),
-        cmocka_unit_test(byteStream_GetChEOFSetup),
+        cmocka_unit_test(byteStreamGetCh_Normal_Setup),
+        cmocka_unit_test(byteStreamGetCh_EOF_Setup),
         //byteStreamWrite
-        cmocka_unit_test(byteStream_WriteSetup),
-        cmocka_unit_test(byteStream_WriteMidSetup),
-        cmocka_unit_test(byteStream_WriteEndSetup),
-        cmocka_unit_test(byteStream_WriteErrSetup),
+        cmocka_unit_test(byteStreamWrite_Normal_Setup),
+        cmocka_unit_test(byteStreamWrite_AtMid_Setup),
+        cmocka_unit_test(byteStreamWrite_AtEnd_Setup),
+        cmocka_unit_test(byteStreamWrite_Err_Setup),
         //byteStreamWriteAtPosition
-        cmocka_unit_test(byteStream_WriteAtPositionErrSetup),
-        cmocka_unit_test(byteStream_WriteAtPositionStartSetup),
-        cmocka_unit_test(byteStream_WriteAtPositionMidSetup),
+        cmocka_unit_test(byteStreamWriteAtPosition_Err_Setup),
+        cmocka_unit_test(byteStreamWriteAtPosition_Start_Setup),
+        cmocka_unit_test(byteStreamWriteAtPosition_Mid_Setup),
         //byteStreamReturnAscii
         //same function is called for:
         // - byteStreamReturnLatin1
         // - byteStreamReturnUtf8
-        cmocka_unit_test(byteStream_ReturnAsciiWordSetup),
-        cmocka_unit_test(byteStream_ReturnAsciiFullBufferSetup),
-        cmocka_unit_test(byteStream_ReturnAsciiFailOnDoubleNullSetup),
-        cmocka_unit_test(byteStream_ReturnAsciiFailWithNoBytesSetup),
+        cmocka_unit_test(byteStreamReturnAscii_Word_Setup),
+        cmocka_unit_test(byteStreamReturnAscii_FullBuffer_Setup),
+        cmocka_unit_test(byteStreamReturnAscii_FailOnDoubleNull_Setup),
+        cmocka_unit_test(byteStreamReturnAscii_FailWithNoBytes_Setup),
         //byteStreamReturnUtf16
-        cmocka_unit_test(byteStream_ReturnUtf16WordSetup),
-        cmocka_unit_test(byteStream_ReturnUtf16FullBufferSetup),
+        cmocka_unit_test(byteStreamReturnUtf16_Word_Setup),
+        cmocka_unit_test(byteStreamReturnUtf16_FullBuffer_Setup),
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

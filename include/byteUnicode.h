@@ -13,7 +13,7 @@ void byteSetEndianess(bool endianess);
 bool byteIsUtf8(const unsigned char *utf);
 size_t byteStrlen(unsigned char encoding, const unsigned char *bytes);
 bool byteIsLegalEncoding(unsigned char encoding);
-bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t *inLen, unsigned char **out, unsigned char outEncoding, size_t *outLen);
+bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t inLen, unsigned char **out, unsigned char outEncoding, size_t *outLen);
 
 //utf16
 size_t byteUtf16Strlen(const unsigned char *utf);
