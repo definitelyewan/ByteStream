@@ -146,7 +146,7 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
         case BYTE_ASCII:
             
             sampleInLen = inLen;
-            sampleOutLen = (inLen) * 4; //make a safe guess, the highest code is 4 so *4
+            sampleOutLen = inLen * 4; //make a safe guess, the highest code is 4 so *4
             
             tmp = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
 
@@ -154,6 +154,7 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             if(!byteAsciiToUtf8(tmp, &sampleOutLen, in, &sampleInLen)){
                 free(tmp);
                 *outLen = 0;
+                *out = NULL;
                 return false;
             }
 
@@ -166,10 +167,13 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             sampleInLen = inLen;
             sampleOutLen = inLen * 4; //make a safe guess, the highest code is 4 so *4
 
+            tmp = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
+
             //try and convert to utf8
             if(!byteLat1ToUtf8(tmp, &sampleOutLen, in, &sampleInLen)){
                 free(tmp);
                 *outLen = 0;
+                *out = NULL;
                 return false;
             }
 
@@ -183,7 +187,7 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             sampleInLen = inLen;
             sampleOutLen = inLen;
 
-            tmp = calloc(sizeof(unsigned char), sampleInLen);
+            tmp = calloc(sizeof(unsigned char), sampleInLen + 1);
             memcpy(tmp, in, sampleInLen);
 
             break;
@@ -192,13 +196,16 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             sampleInLen = inLen;
             sampleOutLen = inLen; //guess and will be shrunk later
 
+            tmp = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
+            
             //try and convert to utf8
             if(!byteUtf16beToUtf8(tmp, &sampleOutLen, in, &sampleInLen)){
                 free(tmp);
                 *outLen = 0;
+                *out = NULL;
                 return false;
             }
-
+            
             //shrink
             tmp = realloc(tmp, sampleOutLen + BYTE_PADDING);
 
@@ -208,10 +215,13 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             sampleInLen = inLen;
             sampleOutLen = inLen; //guess and will be shrunk later
 
+            tmp = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
+
             //try and convert to utf8
             if(!byteUtf16leToUtf8(tmp, &sampleOutLen, in, &sampleInLen)){
                 free(tmp);
                 *outLen = 0;
+                *out = NULL;
                 return false;
             }
 
@@ -226,9 +236,9 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
     //was the provided text valid?
     if(!byteIsUtf8(tmp)){
         free(tmp);
+        *out = NULL;
         return false;
     }
-
     switch(outEncoding){
         case BYTE_ASCII:
 
@@ -238,21 +248,26 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             if(!byteUtf8ToAscii(*out, &sampleOutLen, tmp, &sampleInLen)){
                 *outLen = sampleOutLen;
                 free(tmp);
+                free(*out);
+                *out = NULL;
                 return false;
             }
-            
+            *out = realloc(*out, sampleOutLen + BYTE_PADDING);
+
             break;
         case BYTE_ISO_8859_1:
-
             //assume lat is <= to utf8
             *out = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
             
             if(!byteUtf8ToLat1(*out, &sampleOutLen, tmp, &sampleInLen)){
                 *outLen = sampleOutLen;
                 free(tmp);
+                free(*out);
+                *out = NULL;
                 return false;
             }
-
+            
+            *out = realloc(*out, sampleOutLen + BYTE_PADDING);
             break;
         case BYTE_UTF16BE:
 
@@ -264,9 +279,12 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             if(!byteUtf8ToUtf16be(*out, &sampleOutLen, tmp, &sampleInLen)){
                 *outLen = sampleOutLen;
                 free(tmp);
+                free(*out);
+                *out = NULL;
                 return false;
             }
 
+            *out = realloc(*out, sampleOutLen + BYTE_PADDING);
             break;
         case BYTE_UTF16LE:
 
@@ -277,8 +295,12 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             if(!byteUtf8ToUtf16le(*out, &sampleOutLen, tmp, &sampleInLen)){
                 *outLen = sampleOutLen;
                 free(tmp);
+                free(*out);
+                *out = NULL;
                 return false;
             }
+
+            *out = realloc(*out, sampleOutLen + BYTE_PADDING);
             break;
         //if this stage is reached the sample string is always valid utf8
         //if the desired encoding was utf8 this will trigger
@@ -288,7 +310,6 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             break;
     }
 
-    *out = realloc(*out, sampleOutLen + BYTE_PADDING);
     *outLen = sampleOutLen;
     free(tmp);
 
@@ -305,7 +326,7 @@ bool byteHasBOM(const unsigned char *utf){
             (utf[0] == 0xfe && utf[1] == 0xff)) ? true : false;
 }
 
-bool bytePrependBOM(unsigned char **utf, size_t *utfLen){
+bool bytePrependBOM(unsigned char encoding, unsigned char **utf, size_t *utfLen){
 
     if(utf == NULL || *utfLen < 2){
         //do not change utflen
@@ -317,15 +338,15 @@ bool bytePrependBOM(unsigned char **utf, size_t *utfLen){
     }
 
     unsigned char bom[BYTE_BOM_SIZE];
-
-    //be
-    if((*utf)[0] == 0x00){
+    
+    if(encoding == BYTE_UTF16BE){
         bom[0] = 0xfe;
         bom[1] = 0xff;
-    //le
-    }else{
+    }else if(encoding == BYTE_UTF16LE){
         bom[0] = 0xff;
         bom[1] = 0xfe;
+    }else{
+        return false;
     }
 
     *utfLen += BYTE_BOM_SIZE;

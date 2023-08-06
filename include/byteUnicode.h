@@ -18,7 +18,7 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
 //utf16
 size_t byteUtf16Strlen(const unsigned char *utf);
 bool byteHasBOM(const unsigned char *utf);
-bool bytePrependBOM(unsigned char **utf, size_t *utfLen);
+bool bytePrependBOM(unsigned char encoding, unsigned char **utf, size_t *utfLen);
 
 /**
  * the following functions are heavily inspired by libxml2 the referance

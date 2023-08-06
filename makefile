@@ -21,7 +21,7 @@ main: $(BIN)libbstream.a main.c
 	$(CC) $(CFLAGS) -I$(INC) -L$(BIN) main.c -o main -lbstream
 
 test: static $(BYTE_TEST_EXES)
-	for test in $(BYTE_TEST_EXES) ; do ./$$test ; done
+	for test in $(BYTE_TEST_EXES) ; do valgrind --leak-check=full --show-leak-kinds=all ./$$test ; done
 
 #static lib
 static: $(BIN)libbstream.a
