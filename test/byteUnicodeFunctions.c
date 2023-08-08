@@ -1134,6 +1134,193 @@ static void byteConvertTextFormat_ConvertUtf16BeToUtf16LeV2_Setup(void **state){
     free(out);
 }
 
+static void byteConvertTextFormat_ConvertUtf16LeToAscii_Setup(void **state){
+    (void) state; //unused
+
+    unsigned char in[] = {
+     0x49, 0x00, 0x20, 0x00, 0x63, 0x00, 0x61, 0x00, 0x6e, 0x00, 0x27, 0x00, 
+     0x74, 0x00, 0x20, 0x00, 0x74, 0x00, 0x65, 0x00, 0x73, 0x00, 0x74, 0x00, 
+     0x20, 0x00, 0x6e, 0x00, 0x6f, 0x00, 0x20, 0x00, 0x6d, 0x00, 0x6f, 0x00, 
+     0x72, 0x00, 0x65, 0x00, 0x20, 0x00, 0x3a, 0x00, 0x28, 0x00, 0x29, 0x00};
+    unsigned char expected[] = "I can't test no more :()";
+
+    unsigned char *out = NULL;
+    size_t inl = strlen((char *)expected);
+    size_t outl = 0;
+    
+    bool v = byteConvertTextFormat(in, BYTE_UTF16LE, inl, &out, BYTE_ASCII, &outl);
+
+    assert_true(v);
+    assert_int_not_equal(outl,0);
+    assert_memory_equal(expected,out,outl);
+
+    free(out);
+}
+
+static void byteConvertTextFormat_ConvertUtf16LeToAsciiV2_Setup(void **state){
+    (void) state; //unused
+
+    unsigned char in[] = {'\r', 0, '\t', 0, '\n', 0};
+    unsigned char expected[] = "\r\t\n";
+
+    unsigned char *out = NULL;
+    size_t inl = 6;//strlen((char *)expected);
+    size_t outl = 0;
+    
+    bool v = byteConvertTextFormat(in, BYTE_UTF16LE, inl, &out, BYTE_ASCII, &outl);
+
+    assert_true(v);
+    assert_int_not_equal(outl,0);
+    assert_memory_equal(expected,out,outl);
+
+    free(out);
+}
+
+static void byteConvertTextFormat_ConvertUtf16LeToLatin1_Setup(void **state){
+    (void) state; //unused
+
+    unsigned char in[] = {0xdf, 0x00, 0xd3, 0x00, 0xab, 0x00, 0x5d, 0x00, 0xd7, 0x00};
+    unsigned char expected[] = {0xDF, 0xD3, 0xAB, ']', 0xD7, 0};
+    //ßÓ«]×
+
+    unsigned char *out = NULL;
+    size_t inl = 10;//strlen((char *)expected);
+    size_t outl = 0;
+    
+    bool v = byteConvertTextFormat(in, BYTE_UTF16LE, inl, &out, BYTE_ISO_8859_1, &outl);
+
+    assert_true(v);
+    assert_int_not_equal(outl,0);
+    assert_memory_equal(expected,out,outl);
+
+    free(out);
+}
+
+static void byteConvertTextFormat_ConvertUtf16LeToLatin1V2_Setup(void **state){
+    (void) state; //unused
+    
+    //français
+    unsigned char in[] = {0x66, 0x00, 0x72, 0x00, 0x61, 0x00, 0x6e, 0x00, 0xe7, 0x00, 0x61, 0x00, 0x69, 0x00, 0x73, 0x00};
+    unsigned char expected[] = {'f','r','a','n',231,'a','i','s'};
+
+    unsigned char *out = NULL;
+    size_t inl = 16;//strlen((char *)expected);
+    size_t outl = 0;
+    
+    bool v = byteConvertTextFormat(in, BYTE_UTF16LE, inl, &out, BYTE_ISO_8859_1, &outl);
+
+    assert_true(v);
+    assert_int_not_equal(outl,0);
+    assert_memory_equal(expected,out,8);
+
+    free(out);
+}
+
+static void byteConvertTextFormat_ConvertUtf16LeToUtf8_Setup(void **state){
+    (void) state; //unused
+    
+    //français
+    unsigned char in[] = {0x66, 0x00, 0x72, 0x00, 0x61, 0x00, 0x6e, 0x00, 0xe7, 0x00, 0x61, 0x00, 0x69, 0x00, 0x73, 0x00};
+    unsigned char expected[] = "français";
+
+    unsigned char *out = NULL;
+    size_t inl = 16;//strlen((char *)expected);
+    size_t outl = 0;
+    
+    bool v = byteConvertTextFormat(in, BYTE_UTF16LE, inl, &out, BYTE_UTF8, &outl);
+
+    assert_true(v);
+    assert_int_not_equal(outl,0);
+    assert_memory_equal(expected,out,outl);
+
+    free(out);
+}
+
+static void byteConvertTextFormat_ConvertUtf16LeToUtf8V2_Setup(void **state){
+    (void) state; //unused
+    
+    unsigned char in[] = {
+     0xfe, 0x00, 0x65, 0x00, 0x74, 0x00, 0x74, 0x00, 0x61, 0x00, 0x20, 0x00, 
+     0x65, 0x00, 0x72, 0x00, 0x75, 0x00, 0x20, 0x00, 0x6e, 0x00, 0x6f, 0x00, 
+     0x6b, 0x00, 0x6b, 0x00, 0x75, 0x00, 0x72, 0x00, 0x20, 0x00, 0x6f, 0x00, 
+     0x72, 0x00, 0xf0, 0x00, 0x20, 0x00, 0xe1, 0x00, 0x20, 0x00, 0xed, 0x00, 
+     0x73, 0x00, 0x6c, 0x00, 0x65, 0x00, 0x6e, 0x00, 0x73, 0x00, 0x6b, 0x00, 
+     0x75, 0x00};
+    unsigned char expected[] = "þetta eru nokkur orð á íslensku";
+
+    unsigned char *out = NULL;
+    size_t inl = 62;//strlen((char *)expected);
+    size_t outl = 0;
+    
+    bool v = byteConvertTextFormat(in, BYTE_UTF16LE, inl, &out, BYTE_UTF8, &outl);
+
+    assert_true(v);
+    assert_int_not_equal(outl,0);
+    assert_memory_equal(expected,out,outl);
+    free(out);
+}
+
+static void byteConvertTextFormat_ConvertUtf16LeToUtf16Be_Setup(void **state){
+    (void) state; //unused
+    
+    unsigned char in[] = {
+     0xfe, 0x00, 0x65, 0x00, 0x74, 0x00, 0x74, 0x00, 0x61, 0x00, 0x20, 0x00, 
+     0x65, 0x00, 0x72, 0x00, 0x75, 0x00, 0x20, 0x00, 0x6e, 0x00, 0x6f, 0x00, 
+     0x6b, 0x00, 0x6b, 0x00, 0x75, 0x00, 0x72, 0x00, 0x20, 0x00, 0x6f, 0x00, 
+     0x72, 0x00, 0xf0, 0x00, 0x20, 0x00, 0xe1, 0x00, 0x20, 0x00, 0xed, 0x00, 
+     0x73, 0x00, 0x6c, 0x00, 0x65, 0x00, 0x6e, 0x00, 0x73, 0x00, 0x6b, 0x00, 
+     0x75, 0x00};
+    unsigned char expected[] = {
+     0x00, 0xfe, 0x00, 0x65, 0x00, 0x74, 0x00, 0x74, 0x00, 0x61, 0x00, 0x20,
+     0x00, 0x65, 0x00, 0x72, 0x00, 0x75, 0x00, 0x20, 0x00, 0x6e, 0x00, 0x6f, 
+     0x00, 0x6b, 0x00, 0x6b, 0x00, 0x75, 0x00, 0x72, 0x00, 0x20, 0x00, 0x6f, 
+     0x00, 0x72, 0x00, 0xf0, 0x00, 0x20, 0x00, 0xe1, 0x00, 0x20, 0x00, 0xed, 
+     0x00, 0x73, 0x00, 0x6c, 0x00, 0x65, 0x00, 0x6e, 0x00, 0x73, 0x00, 0x6b, 
+     0x00, 0x75};
+    //þetta eru nokkur orð á íslensku
+
+    unsigned char *out = NULL;
+    size_t inl = 62;//strlen((char *)expected);
+    size_t outl = 0;
+    
+    bool v = byteConvertTextFormat(in, BYTE_UTF16LE, inl, &out, BYTE_UTF16BE, &outl);
+
+    assert_true(v);
+    assert_int_not_equal(outl,0);
+    assert_memory_equal(expected,out,outl);
+    free(out);
+}
+
+static void byteConvertTextFormat_ConvertUtf16LeToUtf16BeV2_Setup(void **state){
+    (void) state; //unused
+    
+    unsigned char in[] = {
+     0x28, 0x09, 0x47, 0x09, 0x2a, 0x09, 0x3e, 0x09, 0x32, 0x09, 0x20, 0x00,
+     0x2c, 0x09, 0x3e, 0x09, 0x1f, 0x09, 0x20, 0x00, 0x28, 0x09, 0x2e, 0x09, 
+     0x38, 0x09, 0x4d, 0x09, 0x15, 0x09, 0x3e, 0x09, 0x30, 0x09};
+    unsigned char expected[] = {
+     0x09, 0x28, 0x09, 0x47, 0x09, 0x2a, 0x09, 0x3e, 0x09, 0x32, 0x00, 0x20, 
+     0x09, 0x2c, 0x09, 0x3e, 0x09, 0x1f, 0x00, 0x20, 0x09, 0x28, 0x09, 0x2e, 
+     0x09, 0x38, 0x09, 0x4d, 0x09, 0x15, 0x09, 0x3e, 0x09, 0x30};
+    //नेपाल बाट नमस्कार
+
+    unsigned char *out = NULL;
+    size_t inl = 34;//strlen((char *)expected);
+    size_t outl = 0;
+    
+    bool v = byteConvertTextFormat(in, BYTE_UTF16LE, inl, &out, BYTE_UTF16BE, &outl);
+
+    assert_true(v);
+    assert_int_not_equal(outl,0);
+    assert_memory_equal(expected,out,outl);
+    free(out);
+}
+
+// for(int i = 0; i < outl; i++){
+//     printf("[%x]",out[i]);
+// }
+// printf("\n");
+
 int main(){
     
     const struct CMUnitTest tests[] = {
@@ -1212,6 +1399,15 @@ int main(){
         cmocka_unit_test(byteConvertTextFormat_ConvertUtf16BeToUtf8V2_Setup),
         cmocka_unit_test(byteConvertTextFormat_ConvertUtf16BeToUtf16Le_Setup),
         cmocka_unit_test(byteConvertTextFormat_ConvertUtf16BeToUtf16LeV2_Setup),
+        //utf16 le converts
+        cmocka_unit_test(byteConvertTextFormat_ConvertUtf16LeToAscii_Setup),
+        cmocka_unit_test(byteConvertTextFormat_ConvertUtf16LeToAsciiV2_Setup),
+        cmocka_unit_test(byteConvertTextFormat_ConvertUtf16LeToLatin1_Setup),
+        cmocka_unit_test(byteConvertTextFormat_ConvertUtf16LeToLatin1V2_Setup),
+        cmocka_unit_test(byteConvertTextFormat_ConvertUtf16LeToUtf8_Setup),
+        cmocka_unit_test(byteConvertTextFormat_ConvertUtf16LeToUtf8V2_Setup),
+        cmocka_unit_test(byteConvertTextFormat_ConvertUtf16LeToUtf16Be_Setup),
+        cmocka_unit_test(byteConvertTextFormat_ConvertUtf16LeToUtf16BeV2_Setup),    
     };
     
     return cmocka_run_group_tests(tests, NULL, NULL);

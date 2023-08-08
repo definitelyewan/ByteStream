@@ -266,13 +266,17 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
                 *out = NULL;
                 return false;
             }
-            
+
             *out = realloc(*out, sampleOutLen + BYTE_PADDING);
             break;
         case BYTE_UTF16BE:
 
-            //safe size is len * 2 which is a guess
-            sampleOutLen = sampleOutLen * 2;
+            //safe guesses
+            if(inEncoding == BYTE_UTF16LE){
+                sampleOutLen = inLen;
+            }else{
+                sampleOutLen = sampleOutLen * 2;
+            }
 
             *out = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
 
@@ -288,8 +292,13 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             break;
         case BYTE_UTF16LE:
 
-            //safe size is len * 2 which is a guess
-            sampleOutLen = sampleOutLen * 2;
+            //safe guesses
+            if(inEncoding == BYTE_UTF16BE){
+                sampleOutLen = inLen;
+            }else{
+                sampleOutLen = sampleOutLen * 2;
+            }
+
             *out = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
 
             if(!byteUtf8ToUtf16le(*out, &sampleOutLen, tmp, &sampleInLen)){

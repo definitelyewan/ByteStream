@@ -8,6 +8,7 @@ extern "C"{
 #include "byteTypes.h"
 
 //mem functions
+ByteStream *byteStreamfromFile(const char *fileName);
 ByteStream *byteStreamCreate(unsigned char *buffer, size_t bufferSize);
 void byteStreamResize(ByteStream *stream, size_t newBufferSize);
 void byteStreamFree(ByteStream *toDelete);

@@ -6,6 +6,45 @@
 #include <byteTypes.h>
 #include <byteUnicode.h>
 
+
+ByteStream *byteStreamfromFile(const char *fileName){
+
+    if(fileName == NULL){
+        return NULL;
+    }
+
+    unsigned char *tmp = NULL;
+    FILE *fp = NULL;
+    size_t sz = 0;
+    ByteStream *stream = NULL;
+
+    if((fp = fopen(fileName, "rb")) == NULL){
+        return NULL;
+    }
+
+    fseek(fp, 0L, SEEK_END);
+    sz = ftell(fp);
+    fseek(fp, 0L, SEEK_SET);
+
+    if(sz == 0){
+        fclose(fp);
+        return NULL;
+    }
+
+    tmp = calloc(sizeof(unsigned char), sz);
+
+    if((fread(tmp, sz, sizeof(unsigned char), fp)) == 0){
+        free(tmp);
+        fclose(fp);
+        return NULL;
+    }
+
+    stream = byteStreamCreate(tmp, sz);
+    free(tmp);
+
+    return stream;
+}
+
 ByteStream *byteStreamCreate(unsigned char *buffer, size_t bufferSize){
     
     if(bufferSize == 0){
