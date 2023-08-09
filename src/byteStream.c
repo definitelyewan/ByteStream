@@ -5,59 +5,54 @@
 #include <byteStream.h>
 #include <byteTypes.h>
 #include <byteUnicode.h>
+#include <assert.h>
 
 
-ByteStream *byteStreamfromFile(const char *fileName){
+ByteStream *byteStreamFromFile(const char *fileName){
 
-    if(fileName == NULL){
-        return NULL;
-    }
+    assert(fileName);
 
-    unsigned char *tmp = NULL;
     FILE *fp = NULL;
-    size_t sz = 0;
-    ByteStream *stream = NULL;
 
-    if((fp = fopen(fileName, "rb")) == NULL){
+    if(!(fp = fopen(fileName, "rb"))){
         return NULL;
     }
 
+    //get filesize
     fseek(fp, 0L, SEEK_END);
-    sz = ftell(fp);
+    size_t sz = ftell(fp);
     fseek(fp, 0L, SEEK_SET);
 
-    if(sz == 0){
+    //no bytes were read
+    if(!sz){
         fclose(fp);
         return NULL;
     }
 
-    tmp = calloc(sizeof(unsigned char), sz);
+    unsigned char *tmp = malloc(sz);
 
-    if((fread(tmp, sz, sizeof(unsigned char), fp)) == 0){
+    if(!(fread(tmp, sz, sizeof(unsigned char), fp))){
         free(tmp);
         fclose(fp);
         return NULL;
     }
 
-    stream = byteStreamCreate(tmp, sz);
+    ByteStream *stream = byteStreamCreate(tmp, sz);
     free(tmp);
-
+    fclose(fp);
     return stream;
 }
 
 ByteStream *byteStreamCreate(unsigned char *buffer, size_t bufferSize){
     
-    if(bufferSize == 0){
+    if(!bufferSize){
         return NULL;
     }
 
-
     ByteStream *stream = malloc(sizeof(ByteStream));
-    unsigned char *tmp = NULL;
-
-    tmp = calloc(sizeof(unsigned char), bufferSize + BYTE_PADDING);
+    unsigned char *tmp = calloc(sizeof(unsigned char), bufferSize + BYTE_PADDING);
     
-    if(buffer != NULL){
+    if(buffer){
         memcpy(tmp, buffer, bufferSize);
     }
 
@@ -65,7 +60,6 @@ ByteStream *byteStreamCreate(unsigned char *buffer, size_t bufferSize){
     stream->bufferSize = bufferSize;
     stream->cursor = 0;
 
-    
     return stream;
 }
 
@@ -75,41 +69,31 @@ void byteStreamResize(ByteStream *stream, size_t newBufferSize){
         return;
     }
 
-    unsigned char *tmp = NULL;
-
-    tmp = calloc(sizeof(unsigned char), newBufferSize);
+    unsigned char *tmp = calloc(sizeof(unsigned char), newBufferSize);
 
     if(newBufferSize > stream->bufferSize){
         
-        //copy old buffer
-        for(size_t i = 0; i < stream->bufferSize; i++){
-            tmp[i] = stream->buffer[i];
-        }
-
-        //add 0s
-        for(size_t i = stream->bufferSize; i < newBufferSize; i++){
-            tmp[i] = 0;
-        }
-
-        free(stream->buffer);
-        stream->buffer = tmp;
-        stream->bufferSize = newBufferSize;
+        //create a new buffer
+        memcpy(tmp, stream->buffer, stream->bufferSize);
+        memset(tmp + stream->bufferSize, 0, newBufferSize - stream->bufferSize);
     
     }else if(newBufferSize < stream->bufferSize){
+        
+        //create a new buffer
         memcpy(tmp, stream->buffer, newBufferSize);
-
-        free(stream->buffer);
-        stream->buffer = tmp;
-
 
         if(stream->cursor > newBufferSize){
             stream->cursor = newBufferSize;
         }
 
-        stream->bufferSize = newBufferSize;
     }else{
         free(tmp);
+        return;
     }
+
+    free(stream->buffer);
+    stream->buffer = tmp;
+    stream->bufferSize = newBufferSize;
 }
 
 void byteStreamFree(ByteStream *toDelete){

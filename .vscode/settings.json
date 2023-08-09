@@ -16,6 +16,7 @@
         "limits.h": "c",
         "bytetypes.h": "c",
         "byteunicode.h": "c",
-        "setjmp.h": "c"
+        "setjmp.h": "c",
+        "perf_event.h": "c"
     }
 }
