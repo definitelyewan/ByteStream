@@ -14,13 +14,6 @@ typedef struct _ByteStream{
     size_t cursor;
 }ByteStream;
 
-
-typedef struct _Str{
-    unsigned char encoding;
-    unsigned char *str;
-    size_t strSize;
-}Str;
-
 #ifdef __cplusplus
 } //extern c end
 #endif
