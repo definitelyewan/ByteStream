@@ -323,24 +323,19 @@ unsigned char *byteStreamReturnAscii(ByteStream *stream, size_t *outLen){
         return NULL;
     }
 
-    size_t len = 0;
-    unsigned char *ret = NULL;
-
-    len = byteStrlen(BYTE_ASCII, byteStreamCursor(stream));
+    size_t len = byteStrlen(BYTE_ASCII, byteStreamCursor(stream));
 
     if(len){
         len++;
-        ret = calloc(sizeof(unsigned char), len + BYTE_PADDING);
-        byteStreamRead(stream, ret, len);   
+        unsigned char *ret = calloc(sizeof(unsigned char), len + BYTE_PADDING);
+        byteStreamRead(stream, ret, len);
+        *outLen = len;
+        return ret;   
     }
 
     //read no bytes
-    if(ret == NULL){
-        len = 0;
-    }
-
-    *outLen = len;
-    return ret;
+    *outLen = 0;
+    return NULL;
 }
 
 unsigned char *byteStreamReturnLatin1(ByteStream *stream, size_t *outLen){

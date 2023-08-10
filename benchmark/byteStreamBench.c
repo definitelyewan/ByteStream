@@ -146,6 +146,10 @@ static void byteStreamReturnAscii_Bench(ByteStream **stream){
     ret = byteStreamReturnAscii(*stream, &size);
 }
 
+static void byteStreamReturnUtf16_Bench(ByteStream **stream){
+    ret = byteStreamReturnUtf16(*stream, &size);
+}
+
 int main(){
 
     ByteStream *stream = NULL;
@@ -157,7 +161,7 @@ int main(){
      * Note: byteStreamReturnUtf8 and byteStreamReturnLatin1 are not benched because they are wrappers
      * for byteStreamReturnAscii
      */
-    
+
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
     printf("| %-26s | %-40s | %-15s | %-15s |\n", "Function Name", "Description", "Run Time (ms)", "Instructions");
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
@@ -256,7 +260,18 @@ int main(){
     free(ret);
     byteStreamDestroy(stream);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
-
+    
+    //byteStreamReturnUtf16 benchmark
+    stream = byteStreamFromFile("utf16.txt");
+    byteStreamSearchAndReplace(stream, (unsigned char *)"\n", 1, (unsigned char *)"\0", 1);
+    functionRunner("byteStreamReturnAscii","return the first utf16 str", &stream, byteStreamReturnUtf16_Bench);
+    free(ret);
+    functionRunner("byteStreamReturnAscii","return the second utf16 str", &stream, byteStreamReturnUtf16_Bench);
+    free(ret);
+    functionRunner("byteStreamReturnAscii","return the third utf16 str", &stream, byteStreamReturnUtf16_Bench);
+    free(ret);
+    byteStreamDestroy(stream);
+    printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     return 0;
 }
