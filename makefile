@@ -29,7 +29,7 @@ main: $(BIN)libbstream.a main.c
 	$(CC) $(CFLAGS) -I$(INC) -L$(BIN) main.c -o main -lbstream
 
 bench: static $(BYTE_BENCH_EXES)
-	for benchmark in $(BYTE_BENCH_EXES) ; do ./$$benchmark ; done
+	for benchmark in $(BYTE_BENCH_EXES) ; do valgrind ./$$benchmark ; done
 
 test: static $(BYTE_TEST_EXES)
 	for test in $(BYTE_TEST_EXES) ; do ./$$test ; done
@@ -61,4 +61,4 @@ $(BENCH_BIN)%: $(BENCH)byte%.c $(BIN)libbstream.a
 	$(CC) $(CFLAGS) -I$(INC) $< -o $@ -L$(BIN) -lbstream
 
 clean:
-	rm -rf $(BIN)*.o $(BIN)*.a $(BIN)*.so $(TEST_BIN)*Functions $(BENCH_BIN)*Bench main *.out
+	rm -rf $(BIN)*.o $(BIN)*.a $(BIN)*.so $(TEST_BIN)*Functions $(BENCH_BIN)*Bench main *.out vgcore.*

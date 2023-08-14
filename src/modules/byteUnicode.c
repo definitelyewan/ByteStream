@@ -138,14 +138,13 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
     }
 
     unsigned char *tmp = NULL;
-    size_t sampleInLen = 0;
+    size_t sampleInLen = inLen;
     size_t sampleOutLen = 0;
 
     //conversion to utf8
     switch(inEncoding){
         case BYTE_ASCII:
-            
-            sampleInLen = inLen;
+        
             sampleOutLen = inLen * 4; //make a safe guess, the highest code is 4 so *4
             
             tmp = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
@@ -158,13 +157,9 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
                 return false;
             }
 
-            //shrink
-            tmp = realloc(tmp, sampleOutLen + BYTE_PADDING);
-
             break;
         case BYTE_ISO_8859_1:
-            
-            sampleInLen = inLen;
+
             sampleOutLen = inLen * 4; //make a safe guess, the highest code is 4 so *4
 
             tmp = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
@@ -177,14 +172,10 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
                 return false;
             }
 
-            //shrink
-            tmp = realloc(tmp, sampleOutLen + BYTE_PADDING);
-
             break;
         case BYTE_UTF8:
 
             //utf 8 is used to validate no conversion is used
-            sampleInLen = inLen;
             sampleOutLen = inLen;
 
             tmp = calloc(sizeof(unsigned char), sampleInLen + 1);
@@ -193,7 +184,6 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             break;
         case BYTE_UTF16BE:
 
-            sampleInLen = inLen;
             sampleOutLen = inLen; //guess and will be shrunk later
 
             tmp = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
@@ -205,14 +195,10 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
                 *out = NULL;
                 return false;
             }
-            
-            //shrink
-            tmp = realloc(tmp, sampleOutLen + BYTE_PADDING);
 
             break;
         case BYTE_UTF16LE:
 
-            sampleInLen = inLen;
             sampleOutLen = inLen; //guess and will be shrunk later
 
             tmp = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
@@ -225,13 +211,13 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
                 return false;
             }
 
-            //shrink
-            tmp = realloc(tmp, sampleOutLen + BYTE_PADDING);
-
             break;
         default:
             return false;
     }
+
+    //shrink
+    tmp = realloc(tmp, sampleOutLen + BYTE_PADDING);
 
     //was the provided text valid?
     if(!byteIsUtf8(tmp)){
@@ -239,6 +225,7 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
         *out = NULL;
         return false;
     }
+
     switch(outEncoding){
         case BYTE_ASCII:
 
@@ -252,7 +239,6 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
                 *out = NULL;
                 return false;
             }
-            *out = realloc(*out, sampleOutLen + BYTE_PADDING);
 
             break;
         case BYTE_ISO_8859_1:
@@ -267,7 +253,6 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
                 return false;
             }
 
-            *out = realloc(*out, sampleOutLen + BYTE_PADDING);
             break;
         case BYTE_UTF16BE:
 
@@ -288,7 +273,6 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
                 return false;
             }
 
-            *out = realloc(*out, sampleOutLen + BYTE_PADDING);
             break;
         case BYTE_UTF16LE:
 
@@ -309,7 +293,6 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
                 return false;
             }
 
-            *out = realloc(*out, sampleOutLen + BYTE_PADDING);
             break;
         //if this stage is reached the sample string is always valid utf8
         //if the desired encoding was utf8 this will trigger
@@ -318,6 +301,9 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             memcpy(*out, tmp, sampleOutLen);
             break;
     }
+
+    //shrink
+    tmp = realloc(tmp, sampleOutLen + BYTE_PADDING);
 
     *outLen = sampleOutLen;
     free(tmp);
