@@ -5,7 +5,7 @@
 extern "C"{
 #endif
 
-#include <byteTypes.h>
+#include "byteTypes.h"
 
 //system
 void byteSetEndianess(bool endianess);

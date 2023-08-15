@@ -6,7 +6,7 @@ extern "C"{
 #endif
 
 #include <stdbool.h>
-#include <byteDefines.h>
+#include "byteDefines.h"
 
 typedef struct _ByteStream{
     unsigned char *buffer;

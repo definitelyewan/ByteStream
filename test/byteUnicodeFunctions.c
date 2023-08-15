@@ -33,7 +33,7 @@ static void byteIsUtf8_W3_Setup(void **state){
     size_t s = 0;
     FILE *fp = NULL;
 
-    fp = fopen("utf8-complex.txt","rb");
+    fp = fopen("assets/utf8-complex.txt","rb");
     assert_non_null(fp);
     s = fileLen(fp);
     assert_int_not_equal(s, 0);
@@ -54,7 +54,7 @@ static void byteIsUtf8_WithUtf16_Setup(void **state){
     size_t s = 0;
     FILE *fp = NULL;
 
-    fp = fopen("utf16.txt","rb");
+    fp = fopen("assets/utf16.txt","rb");
     assert_non_null(fp);
     s = fileLen(fp);
     assert_int_not_equal(s, 0);
@@ -76,7 +76,7 @@ static void byteUtf16Strlen_ForUtf16Le_Setup(void **state){
     size_t l = 0;
     FILE *fp = NULL;
 
-    fp = fopen("utf16.txt","rb");
+    fp = fopen("assets/utf16.txt","rb");
     assert_non_null(fp);
     s = fileLen(fp);
     assert_int_not_equal(s, 0);
@@ -99,7 +99,7 @@ static void byteUtf16Strlen_ForUtf16Be_Setup(void **state){
     size_t l = 0;
     FILE *fp = NULL;
 
-    fp = fopen("utf16.txt","rb");
+    fp = fopen("assets/utf16.txt","rb");
     assert_non_null(fp);
     s = fileLen(fp);
     assert_int_not_equal(s, 0);
@@ -139,7 +139,7 @@ static void byteStrlen_Latin1_Setup(void **state){
     size_t l = 0;
     FILE *fp = NULL;
 
-    fp = fopen("latin1.txt","rb");
+    fp = fopen("assets/latin1.txt","rb");
     assert_non_null(fp);
     s = fileLen(fp);
     assert_int_not_equal(s, 0);
@@ -162,7 +162,7 @@ static void byteStrlen_Ascii_Setup(void **state){
     size_t l = 0;
     FILE *fp = NULL;
 
-    fp = fopen("ascii.txt","rb");
+    fp = fopen("assets/ascii.txt","rb");
     assert_non_null(fp);
     s = fileLen(fp);
     assert_int_not_equal(s, 0);
@@ -184,7 +184,7 @@ static void byteStrlen_Utf8_Setup(void **state){
     size_t l = 0;
     FILE *fp = NULL;
 
-    fp = fopen("utf8-complex.txt","rb");
+    fp = fopen("assets/utf8-complex.txt","rb");
     assert_non_null(fp);
     s = fileLen(fp);
     assert_int_not_equal(s, 0);
@@ -206,7 +206,7 @@ static void byteStrlen_Utf16Le_Setup(void **state){
     size_t l = 0;
     FILE *fp = NULL;
 
-    fp = fopen("utf16.txt","rb");
+    fp = fopen("assets/utf16.txt","rb");
     assert_non_null(fp);
     s = fileLen(fp);
     assert_int_not_equal(s, 0);
@@ -228,7 +228,7 @@ static void byteStrlen_Utf16Be_Setup(void **state){
     size_t l = 0;
     FILE *fp = NULL;
 
-    fp = fopen("utf16.txt","rb");
+    fp = fopen("assets/utf16.txt","rb");
     assert_non_null(fp);
     s = fileLen(fp);
     assert_int_not_equal(s, 0);
@@ -259,7 +259,7 @@ static void byteStrlen_Unknown_Setup(void **state){
     size_t l = 0;
     FILE *fp = NULL;
 
-    fp = fopen("utf16.txt","rb");
+    fp = fopen("assets/utf16.txt","rb");
     assert_non_null(fp);
     s = fileLen(fp);
     assert_int_not_equal(s, 0);

@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include <byteUnicode.h>
+#include "byteUnicode.h"
 #include <wchar.h>
 
 //default is little endian because x86 is little endian 

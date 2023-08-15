@@ -5,7 +5,7 @@
 extern "C"{
 #endif
 
-#include <byteTypes.h>
+#include "byteTypes.h"
 
 //mem functions
 ByteStream *byteStreamFromFile(const char *fileName);

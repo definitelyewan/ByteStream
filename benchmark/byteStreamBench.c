@@ -184,7 +184,7 @@ int main(){
     stream = byteStreamCreate(NULL, 10);
     functionRunner("byteStreamRead","Read 5 bytes", &stream, byteStreamRead_Bench);
     byteStreamDestroy(stream);
-    stream = byteStreamFromFile("utf8-complex.txt");
+    stream = byteStreamFromFile("assets/utf8-complex.txt");
     functionRunner("byteStreamRead","Read 1k bytes from utf8-complex.txt", &stream, byteStreamReadV2_Bench);
     byteStreamDestroy(stream);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
@@ -198,27 +198,27 @@ int main(){
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     //byteStreamReadUntil benchmark
-    stream = byteStreamFromFile("utf8-complex.txt");
+    stream = byteStreamFromFile("assets/utf8-complex.txt");
     functionRunner("byteStreamReadUntil","Read until 0xEF ~11862 bytes", &stream, byteStreamReadUntil_Bench);
     byteStreamDestroy(stream);
     free(ret);
-    stream = byteStreamFromFile("ascii.txt");
+    stream = byteStreamFromFile("assets/ascii.txt");
     functionRunner("byteStreamReadUntil","Read until \'p\' 1 byte", &stream, byteStreamReadUntilV2_Bench);
     byteStreamDestroy(stream);
     free(ret);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     //byteStreamSearchAndReplace benchmark
-    stream = byteStreamFromFile("utf8-simple.txt");
+    stream = byteStreamFromFile("assets/utf8-simple.txt");
     functionRunner("byteStreamSearchAndReplace","Replace \"Cyrillic\" with nothing", &stream, byteStreamSearchAndReplace_Bench);
     byteStreamDestroy(stream);
-    stream = byteStreamFromFile("utf8-complex.txt");
+    stream = byteStreamFromFile("assets/utf8-complex.txt");
     functionRunner("byteStreamSearchAndReplace","Change euros to dollars", &stream, byteStreamSearchAndReplaceV2_Bench);
     byteStreamDestroy(stream);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     //byteStreamCursor benchmark
-    stream = byteStreamFromFile("utf16.txt");
+    stream = byteStreamFromFile("assets/utf16.txt");
     functionRunner("byteStreamCursor","Return cursor", &stream, byteStreamCursor_Bench);
     stream->cursor = 128;
     functionRunner("byteStreamCursor","Return cursor again", &stream, byteStreamCursor_Bench);
@@ -226,7 +226,7 @@ int main(){
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     //byteStreamgetCh benchmark
-    stream = byteStreamFromFile("utf16.txt");
+    stream = byteStreamFromFile("assets/utf16.txt");
     functionRunner("byteStreamGetCh","Return first byte", &stream, byteStreamGetCh_Bench);
     stream->cursor = 128;
     functionRunner("byteStreamGetCh","Return the 128th byte", &stream, byteStreamGetCh_Bench);
@@ -242,14 +242,14 @@ int main(){
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     //byteStreamWriteAtPosition benchmark
-    stream = byteStreamFromFile("utf16.txt");
+    stream = byteStreamFromFile("assets/utf16.txt");
     functionRunner("byteStreamWriteAtPosition","Write at the 100th byte", &stream, byteStreamWriteAtPosition_Bench);
     functionRunner("byteStreamWriteAtPosition","Write at the 50th byte", &stream, byteStreamWriteAtPositionV2_Bench);
     byteStreamDestroy(stream);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     //byteStreamReturnAscii benchmark
-    stream = byteStreamFromFile("ascii.txt");
+    stream = byteStreamFromFile("assets/ascii.txt");
     byteStreamSearchAndReplace(stream, (unsigned char *)"\n", 1, (unsigned char *)"\0", 1);
     byteStreamSearchAndReplace(stream, (unsigned char *)" ", 1, (unsigned char *)"\0", 1);
     functionRunner("byteStreamReturnAscii","Return the first ascii str", &stream, byteStreamReturnAscii_Bench);
@@ -262,7 +262,7 @@ int main(){
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
     
     //byteStreamReturnUtf16 benchmark
-    stream = byteStreamFromFile("utf16.txt");
+    stream = byteStreamFromFile("assets/utf16.txt");
     byteStreamSearchAndReplace(stream, (unsigned char *)"\n", 1, (unsigned char *)"\0", 1);
     functionRunner("byteStreamReturnUtf16","Return the first utf16 str", &stream, byteStreamReturnUtf16_Bench);
     free(ret);

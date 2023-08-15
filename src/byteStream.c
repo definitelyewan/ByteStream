@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <byteDefines.h>
-#include <byteStream.h>
-#include <byteTypes.h>
-#include <byteUnicode.h>
+#include "byteDefines.h"
+#include "byteStream.h"
+#include "byteTypes.h"
+#include "byteUnicode.h"
 #include <assert.h>
 
 
