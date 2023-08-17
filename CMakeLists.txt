@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.27.1)
 project(ByteStream VERSION 1.0.0.0)
 
-option(BUILD_SHARED_LIBS "building a shared lib" OFF)
+option(BUILD_SHARED_LIBS "building a shared lib" ON)
 option(BUILD_TESTS "build tests" OFF)
 option(BUILD_BENCHMARKS "build benchmarks" OFF)
 
@@ -30,14 +30,17 @@ if(BUILD_BENCHMARKS)
   add_subdirectory(benchmark)
 endif()
 
-#install section fingers crossed this works on windows too
-install(TARGETS ByteStream DESTINATION lib)
-install(FILES ${BYTESTREAM_HEADERS} DESTINATION include)
-
-if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
-  include(InstallRequiredSystemLibraries)
-  set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-  set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
-  set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
-  include(CPack)
+#install on linux
+if(UNIX AND NOT APPLE)
+  include(GNUInstallDirs)
+  install(TARGETS ByteStream DESTINATION "/usr/lib")
+  install(FILES ${BYTESTREAM_HEADERS} DESTINATION "/usr/include")
+elseif(WIN32)
+elseif(APPLE)
 endif()
+
+include(InstallRequiredSystemLibraries)
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+include(CPack)
