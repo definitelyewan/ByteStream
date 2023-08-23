@@ -4,3 +4,4 @@ main
 *.so
 *.a
 output.txt
+build/

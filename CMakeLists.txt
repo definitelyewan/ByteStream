@@ -4,6 +4,7 @@ project(ByteStream VERSION 1.0.0.0)
 option(BUILD_SHARED_LIBS "building a shared lib" ON)
 option(BUILD_TESTS "build tests" OFF)
 option(BUILD_BENCHMARKS "build benchmarks" OFF)
+option(BUILD_DOCS "build documentation" ON)
 
 set(BYTESTREAM_HEADERS
   "${CMAKE_SOURCE_DIR}/include/byteDefines.h"
@@ -30,17 +31,24 @@ if(BUILD_BENCHMARKS)
   add_subdirectory(benchmark)
 endif()
 
+if(BUILD_DOCS)
+  add_subdirectory(docs)
+endif()
+
 #install on linux
 if(UNIX AND NOT APPLE)
   include(GNUInstallDirs)
   install(TARGETS ByteStream DESTINATION "/usr/lib")
   install(FILES ${BYTESTREAM_HEADERS} DESTINATION "/usr/include")
+
+  include(InstallRequiredSystemLibraries)
+  set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+  set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+  set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+  include(CPack)
 elseif(WIN32)
+#i dont know how to do this :(
 elseif(APPLE)
+#i dont have mac hardware :(
 endif()
 
-include(InstallRequiredSystemLibraries)
-set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
-set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
-include(CPack)

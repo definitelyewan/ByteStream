@@ -1,0 +1,206 @@
+/**
+
+@mainpage
+
+ByteStream is a stream library entirely written in C with a specific emphasis on different text encodings such as different unicode standards and ASCII. It only requires the standard C library and works on both Linux and Windows while compiled with either GCC or Clang.
+
+The official repo for this library is located at https://github.com/definitelyewan/ByteStream
+
+@section main-features Features
+
+ByteStream Provides an easy way to initialize a stream from a file or directly by the caller.
+From this point, the caller can easily read and write to the stream from a supplied position or
+the internal position. This library also provides functions for converting different unicode standards
+and other text standards such as ASCII and Latin1. This library has been optimized to reduce the runtime
+of its functions and the number of CPU cycles they require. However, these optimizations have only been
+done on x86 platforms such as Intel and AMD. 
+
+The ByteStream library provides:
+
+ - Creating a stream from a file or supplied data
+ - Reading and writing from a stream
+ - Coverage of UTF8, UTF16LE, UTF16BE, Latin1, and Ascii
+ - Conversion between all supported encoding standards
+ - Support for reading integers and SafeSync integers
+ - 100% test coverage
+ - 100% benchmark coverage
+ - License: MIT
+
+@section main-test Some Examples
+
+Creating a stream can be done in two different ways, either from a file or user supplied data. Bellow is an example
+of how you would create a stream using this library.
+
+@code
+#include <stdio.h>
+#include <byteStream.h>
+
+int main(int argc, char *argv[]){
+  
+  if(argc != 2){
+    return 0;
+  }
+  /* create a stream from a file */
+  ByteStream *stream = NULL;
+
+  if((stream = byteStreamFromFile(argv[1])) == NULL){
+    printf("Stream was NULL\n");
+    return 0;
+  }
+  /* or...
+    stream = byteStreamCreate("any data you want", 18);
+    stream = byteStreamCreate(NULL,18); //creates a stream with no data
+  */
+
+  /* print the stream in hex */
+  byteStreamPrintf("%x",stream);
+  
+  /* free */
+  byteStreamDestroy(stream);
+}
+
+@endcode
+
+The following example will cover how to read data throughout a stream.
+
+@code
+#include <stdio.h>
+#include <stdlib.h>
+#include <byteStream.h>
+
+int main(int argc, char *argv[]){
+  
+  ByteStream *stream = byteStreamCreate("1234567890",10);
+  unsigned char buf[2];
+  unsigned char *buf2;
+  
+  /* read from the stream */
+  if((byteStreamRead(stream, buf, 2))){
+
+    /* print the stream */
+    printf("read:[%c%c]\n",buf[0],buf[1]);
+    byteStreamPrintf("%c",stream);
+
+  }
+
+  /* read from stream */
+  if((buf2 = byteStreamReadUntil(stream, '8')) != NULL){
+    /* print the stream */
+    for(int i = 0; i < 6; i++){
+      printf("value %d = %c\n", i, buf2[i]);
+    }
+    
+    free(buf2);
+  }
+  
+  /* read character by character */
+  if(byteStreamGetCh(stream) != EOF){
+    printf("%c\n",byteStreamGetCh(stream));
+    byteStreamSeek(stream, 1, SEEK_CUR);
+    printf("%c\n",byteStreamGetCh(stream));
+    byteStreamSeek(stream, 1, SEEK_CUR);
+  }
+  
+  /* tell the user the stream has ended */
+  if(byteStreamGetCh(stream) == EOF){
+    printf("end of stream\n");
+  }
+  
+  /* rewind */
+  byteStreamSeek(stream, 0, SEEK_SET);
+  
+  /* free */
+  byteStreamDestroy(stream);
+}
+
+@endcode
+
+The bellow example will cover hot to write data to a stream.
+
+@code
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <byteStream.h>
+
+int main(int argc, char *argv[]){
+  
+  /* create a stream */
+  ByteStream *stream = byteStreamCreate(NULL,10);
+  
+  /* write to a stream */
+  byteStreamWrite(stream, (unsigned char *)"0123456789", 10);
+  byteStreamSeek(stream, 0, SEEK_SET);
+  byteStreamPrintf("%c",stream);
+
+  /* reverse the stream */
+  byteStreamWriteAtPosition(stream, "9876543210", 10, 0);
+  byteStreamSeek(stream, 0, SEEK_SET);
+  byteStreamPrintf("%c",stream);
+
+  /* replace values */
+  byteStreamSearchAndReplace(stream, (unsigned char *)"654", 3, (unsigned char *)"\xff\xfe\xfd", 3);
+  byteStreamSeek(stream, 0, SEEK_SET);
+  byteStreamPrintf("%x",stream);
+  
+  /* free */
+  byteStreamDestroy(stream);
+}
+
+@endcode
+
+ByteStream adds support for other text encodings such as unicode, the bellow example will revolve around
+reading and writing these kinds of values.
+
+@code
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <byteStream.h>
+#include <byteUnicode.h>
+
+int main(int argc, char *argv[]){
+  
+  unsigned char *utf8 = NULL;
+  unsigned char *utf16le = NULL;
+  unsigned char *ascii = NULL;
+  unsigned char val[] = {0x17, 0x09, 0x3e, 0x09, 0x1c, 0x09, 0x30, 0x09, 0, 0};
+  size_t s = 0;
+  
+  /* create a stream */
+  ByteStream *stream = byteStreamCreate(NULL,29);
+  
+  /* build a stream of different encodings */
+  byteStreamWrite(stream,"गाजर", byteStrlen(BYTE_UTF8, "गाजर"));
+  byteStreamSeek(stream, 1, SEEK_CUR);
+  
+  byteStreamWrite(stream,val, byteStrlen(BYTE_UTF16LE, val));
+  byteStreamSeek(stream, 2, SEEK_CUR);
+  
+  byteStreamWrite(stream, "carrot", byteStrlen(BYTE_ASCII,"carrot"));
+  
+  /* rewind the stream so we can read from it again */
+  byteStreamSeek(stream, 0, SEEK_SET);
+  
+  /* read utf8 value */
+  utf8 = byteStreamReturnUtf8(stream,&s);
+  printf("%s %d\n",utf8,s);
+  free(utf8);
+
+  /* read utf16le value */
+  utf16le = byteStreamReturnUtf16(stream,&s);
+  printf("%p %d\n",utf16le,s);
+  free(utf16le);
+
+  /* read ascii value */
+  ascii = byteStreamReturnUtf8(stream,&s);
+  printf("%s %d\n",ascii,s);
+  free(ascii);
+  
+  /* free */
+  byteStreamDestroy(stream);
+}
+
+@endcode
+
+*/

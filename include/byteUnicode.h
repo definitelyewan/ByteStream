@@ -1,3 +1,13 @@
+/**
+ * @file byteUnicode.h
+ * @author Ewan Jones
+ * @brief declerations for unicode functions
+ * @version 1.0.0
+ * @date 2023-08-17
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #ifndef BYTE_UNICODE
 #define BYTE_UNICODE
 
@@ -20,11 +30,11 @@ size_t byteUtf16Strlen(const unsigned char *utf);
 bool byteHasBOM(const unsigned char *utf);
 bool bytePrependBOM(unsigned char encoding, unsigned char **utf, size_t *utfLen);
 
-/**
- * the following functions are heavily inspired by libxml2 the referance
- * can be found at the following link:
- * https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwidoOa53ZaAAxVag4kEHVTXDzMQFnoECBwQAQ&url=https%3A%2F%2Fdev.w3.org%2FXML%2Fencoding.c&usg=AOvVaw2LrNRpxyvCE5_LxXUyIeMC&opi=89978449 
-**/
+
+//the following functions are heavily inspired by libxml2 the referance
+//can be found at the following link:
+//https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&cad=rja&uact=8&ved=2ahUKEwidoOa53ZaAAxVag4kEHVTXDzMQFnoECBwQAQ&url=https%3A%2F%2Fdev.w3.org%2FXML%2Fencoding.c&usg=AOvVaw2LrNRpxyvCE5_LxXUyIeMC&opi=89978449 
+
 
 bool byteAsciiToUtf8(unsigned char* out, size_t *outlen, const unsigned char* in, size_t *inlen);
 bool byteUtf8ToAscii(unsigned char* out, size_t *outlen, const unsigned char* in, size_t *inlen);

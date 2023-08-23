@@ -1,3 +1,13 @@
+/**
+ * @file byteStream.c
+ * @author Ewan Jones
+ * @brief functions for creating and performing operations on a ByteStream structure
+ * @version 1.0.0
+ * @date 2023-08-17
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -5,12 +15,13 @@
 #include "byteStream.h"
 #include "byteTypes.h"
 #include "byteUnicode.h"
-#include <assert.h>
 
-
+/**
+ * @brief Creates a ByteStream stucture from a provided file or path
+ * @param fileName 
+ * @return ByteStream* 
+ */
 ByteStream *byteStreamFromFile(const char *fileName){
-
-    assert(fileName);
 
     FILE *fp = NULL;
 
@@ -43,49 +54,65 @@ ByteStream *byteStreamFromFile(const char *fileName){
     return stream;
 }
 
-ByteStream *byteStreamCreate(unsigned char *buffer, size_t bufferSize){
+/**
+ * @brief Creates a ByteStream structure
+ * @details Creates a stream with the provided buffer of n size. If
+ * NULL is given for the buffer parameter this function will create a ByteStream
+ * initilized with 0s.
+ * @param buffer 
+ * @param n
+ * @return ByteStream* 
+ */
+ByteStream *byteStreamCreate(unsigned char *buffer, size_t n){
     
-    if(!bufferSize){
+    if(!n){
         return NULL;
     }
 
     ByteStream *stream = malloc(sizeof(ByteStream));
-    unsigned char *tmp = malloc(bufferSize + BYTE_PADDING);
-    memset(tmp, 0, bufferSize + BYTE_PADDING);
+    unsigned char *tmp = malloc(n + BYTE_PADDING);
+    memset(tmp, 0, n + BYTE_PADDING);
     
     if(buffer){
-        memcpy(tmp, buffer, bufferSize);
+        memcpy(tmp, buffer, n);
     }
 
     stream->buffer = tmp;
-    stream->bufferSize = bufferSize;
+    stream->bufferSize = n;
     stream->cursor = 0;
 
     return stream;
 }
 
-void byteStreamResize(ByteStream *stream, size_t newBufferSize){
+/**
+ * @brief Resizes a stream by n
+ * @details This function will insert 0s when a greater size is provided however, it
+ * will erase data already in the stream if a smaller size is provided.
+ * @param stream 
+ * @param newBufferSize 
+ */
+void byteStreamResize(ByteStream *stream, size_t n){
 
-    if(stream == NULL || newBufferSize == 0){
+    if(stream == NULL || n == 0){
         return;
     }
 
-    unsigned char *tmp = malloc(newBufferSize + BYTE_PADDING);
-    memset(tmp, 0, newBufferSize + BYTE_PADDING);
+    unsigned char *tmp = malloc(n + BYTE_PADDING);
+    memset(tmp, 0, n + BYTE_PADDING);
 
-    if(newBufferSize > stream->bufferSize){
+    if(n > stream->bufferSize){
         
         //create a new buffer
         memcpy(tmp, stream->buffer, stream->bufferSize);
-        memset(tmp + stream->bufferSize, 0, newBufferSize - stream->bufferSize);
+        memset(tmp + stream->bufferSize, 0, n - stream->bufferSize);
     
-    }else if(newBufferSize < stream->bufferSize){
+    }else if(n < stream->bufferSize){
         
         //create a new buffer
-        memcpy(tmp, stream->buffer, newBufferSize);
+        memcpy(tmp, stream->buffer, n);
 
-        if(stream->cursor > newBufferSize){
-            stream->cursor = newBufferSize;
+        if(stream->cursor > n){
+            stream->cursor = n;
         }
 
     }else{
@@ -95,9 +122,14 @@ void byteStreamResize(ByteStream *stream, size_t newBufferSize){
 
     free(stream->buffer);
     stream->buffer = tmp;
-    stream->bufferSize = newBufferSize;
+    stream->bufferSize = n;
 }
 
+/**
+ * @brief Frees internal variables in a ByteStream structure
+ * @details This frees memory allocated to the buffer and will set its size and position to 0
+ * @param toDelete 
+ */
 void byteStreamFree(ByteStream *toDelete){
 
     if(toDelete == NULL){
@@ -114,6 +146,10 @@ void byteStreamFree(ByteStream *toDelete){
 
 }
 
+/**
+ * @brief Frees a ByteStream and destroys its structure
+ * @param toDelete 
+ */
 void byteStreamDestroy(ByteStream *toDelete){
     
     if(toDelete != NULL){
@@ -123,16 +159,26 @@ void byteStreamDestroy(ByteStream *toDelete){
     }
 }
 
-bool byteStreamRead(ByteStream *stream, unsigned char *dest, size_t size){
+/**
+ * @brief Reads n bytes in the stream and updates dest
+ * @details This function returns true if a read of n bytes is successful
+ * other wise it will return false.
+ * @param stream 
+ * @param dest 
+ * @param size 
+ * @return true 
+ * @return false 
+ */
+bool byteStreamRead(ByteStream *stream, unsigned char *dest, size_t n){
 
-    if(stream == NULL || size == 0){
+    if(stream == NULL || n == 0){
         return false;
     }
 
-    size_t wSize = size;
+    size_t wSize = n;
 
     //prevent overflow
-    if(stream->cursor + size > stream->bufferSize){
+    if(stream->cursor + n > stream->bufferSize){
         wSize = stream->bufferSize - stream->cursor;
     }
 
@@ -146,6 +192,17 @@ bool byteStreamRead(ByteStream *stream, unsigned char *dest, size_t size){
     return true;
 }
 
+/**
+ * @brief Seeks dest bytes from a seek option within a stream
+ * @details this function will seek from the end of the stream(SEEK_END), start
+ * (SEEK_SET), and the current person (SEEK_CUR). If this function is successful
+ * it will return true otherwise false.
+ * @param stream 
+ * @param dest 
+ * @param seekOption 
+ * @return true 
+ * @return false 
+ */
 bool byteStreamSeek(ByteStream *stream, size_t dest, const int seekOption){
 
     bool ret = false;
@@ -189,19 +246,31 @@ bool byteStreamSeek(ByteStream *stream, size_t dest, const int seekOption){
     return ret;
 }
 
+/**
+ * @brief Reads until a delimiter is found and returns it to the caller.
+ * @details If the delimiter is not found null will be returned.
+ * @param stream 
+ * @param delimiter 
+ * @return unsigned char* 
+ */
 unsigned char *byteStreamReadUntil(ByteStream *stream, unsigned char delimiter){
 
     if(stream == NULL){
         return NULL;
     }
+    
+    size_t j = 0;
 
     for(size_t i = stream->cursor; i < stream->bufferSize; i++){
+        
+        j++;
+
         //create return
         if(stream->buffer[i] == delimiter){
-            unsigned char *ret = malloc(i + BYTE_PADDING);
+            unsigned char *ret = malloc(j + BYTE_PADDING);
             
-            memset(ret, 0, i + BYTE_PADDING);
-            byteStreamRead(stream, ret, i + 1);
+            memset(ret, 0, j + BYTE_PADDING);
+            byteStreamRead(stream, ret, j);
             return ret;
         }
     }
@@ -209,6 +278,16 @@ unsigned char *byteStreamReadUntil(ByteStream *stream, unsigned char delimiter){
     return NULL;
 }
 
+/**
+ * @brief Uses a pattern to replace all instances with a replace sequence.
+ * @details If the pattern is shorter then the replace sequence the entire replace sequence
+ * will not be copied. The same same is true for the reverse of the two sequenses.
+ * @param stream 
+ * @param pattern 
+ * @param patternSize 
+ * @param replace 
+ * @param replaceSize 
+ */
 void byteStreamSearchAndReplace(ByteStream *stream, unsigned char *pattern, size_t patternSize, unsigned char *replace, size_t replaceSize){
 
     if(stream == NULL || pattern == NULL || patternSize == 0){
@@ -242,9 +321,9 @@ void byteStreamSearchAndReplace(ByteStream *stream, unsigned char *pattern, size
         if(k == patternSize){
             for (size_t j = 0; j < patternSize; j++) {
                 if(j < replaceSize){
-                    stream->buffer[i - j] = replace[j];
+                    stream->buffer[(i - patternSize + 1) + j] = replace[j];
                 }else{
-                    stream->buffer[i - j] = 0;
+                    stream->buffer[(i - patternSize + 1) + j] = 0;
                 }
             }
         }
@@ -253,6 +332,12 @@ void byteStreamSearchAndReplace(ByteStream *stream, unsigned char *pattern, size
     }
 }
 
+/**
+ * @brief Returns a pointer at the current position in the stream.
+ * @details If the cursor is at the end of the stream this function will return null.
+ * @param stream 
+ * @return unsigned char* 
+ */
 unsigned char *byteStreamCursor(ByteStream *stream){
     
     if(stream == NULL){
@@ -267,6 +352,12 @@ unsigned char *byteStreamCursor(ByteStream *stream){
     return stream->buffer + stream->cursor;
 }
 
+/**
+ * @brief Returns the current byte at the streams current position.
+ * @details If the end of the stream is reached this fucntion will return -1 or EOF.
+ * @param stream 
+ * @return int 
+ */
 int byteStreamGetCh(ByteStream *stream){
 
     if(stream == NULL){
@@ -279,16 +370,26 @@ int byteStreamGetCh(ByteStream *stream){
     return c == NULL ? EOF: c[0];
 }
 
-bool byteStreamWrite(ByteStream *stream, unsigned char *src, size_t srcSize){
+/**
+ * @brief Writes n bytes of src to the current position in the stream.
+ * @details This function will return false if it was unsuccessful in writing
+ * to the stream otherwise it will return true.
+ * @param stream 
+ * @param src 
+ * @param n 
+ * @return true 
+ * @return false 
+ */
+bool byteStreamWrite(ByteStream *stream, unsigned char *src, size_t n){
 
-    if(stream == NULL || src == NULL || srcSize > stream->bufferSize || srcSize  == 0){
+    if(stream == NULL || src == NULL || n > stream->bufferSize || n  == 0){
         return false;
     }
 
-    size_t wSize = srcSize;
+    size_t wSize = n;
 
     //prevent overflow
-    if(srcSize + stream->cursor > stream->bufferSize){
+    if(n + stream->cursor > stream->bufferSize){
         wSize = stream->bufferSize - stream->cursor;
     }
 
@@ -298,16 +399,28 @@ bool byteStreamWrite(ByteStream *stream, unsigned char *src, size_t srcSize){
     return true;
 }
 
-bool byteStreamWriteAtPosition(ByteStream *stream, unsigned char *src, size_t srcSize, size_t pos){
+/**
+ * @brief Writes n bytes of src to a provided position in the stream.
+ * @details This function will return false if it was unsuccessful in writing
+ * to the stream otherwise it will return true. This function will not update the
+ * current position of the stream iteslf and only relies on the pos provided.
+ * @param stream 
+ * @param src 
+ * @param n 
+ * @param pos 
+ * @return true 
+ * @return false 
+ */
+bool byteStreamWriteAtPosition(ByteStream *stream, unsigned char *src, size_t n, size_t pos){
 
     if(stream == NULL || pos > stream->bufferSize || src == NULL){
         return false;
     }
 
-    size_t wSize = srcSize;
+    size_t wSize = n;
 
     //prevent overflow
-    if(srcSize + pos > stream->bufferSize){
+    if(n + pos > stream->bufferSize){
         wSize = stream->bufferSize - pos;
     }
 
@@ -316,6 +429,16 @@ bool byteStreamWriteAtPosition(ByteStream *stream, unsigned char *src, size_t sr
 
 }
 
+/**
+ * @brief Reads and returns the first ascii string in the current stream and provides its length.
+ * @details This function is not strict and only looks for the first occurance of a 0 byte meaning
+ * it can be used with other sequences. If this function fails it will return null otherise some
+ * form of null terminated data will be returned.
+ * @details this function 
+ * @param stream 
+ * @param outLen 
+ * @return unsigned char* 
+ */
 unsigned char *byteStreamReturnAscii(ByteStream *stream, size_t *outLen){
 
     if(stream == NULL){
@@ -338,16 +461,43 @@ unsigned char *byteStreamReturnAscii(ByteStream *stream, size_t *outLen){
     return NULL;
 }
 
+/**
+ * @brief Reads and returns the first latin1 string in the current stream and provides its length.
+ * @details This function is not strict and only looks for the first occurance of a 0 byte meaning
+ * it can be used with other sequences. If this function fails it will return null otherise some
+ * form of null terminated data will be returned.
+ * @param stream 
+ * @param outLen 
+ * @return unsigned char* 
+ */
 unsigned char *byteStreamReturnLatin1(ByteStream *stream, size_t *outLen){
     //just extended ascii and its terminated the same way
     return byteStreamReturnAscii(stream, outLen);
 }
 
+/**
+ * @brief Reads and returns the first utf8 string in the current stream and provides its length.
+ * @details This function is not strict and only looks for the first occurance of a 0 byte meaning
+ * it can be used with other sequences. If this function fails it will return null otherise some
+ * form of null terminated data will be returned.
+ * @param stream 
+ * @param outLen 
+ * @return unsigned char* 
+ */
 unsigned char *byteStreamReturnUtf8(ByteStream *stream, size_t *outLen){
     //terminated the same way
     return byteStreamReturnAscii(stream, outLen);
 }
 
+/**
+ * @brief Reads and returns the first utf16be or utf16le string in the current stream and provides its length.
+ * @details This function is not strict and only looks for the first occurance of a 00 bytes meaning
+ * it can be used with other sequences. If this function fails it will return null otherise some
+ * form of null terminated data will be returned.
+ * @param stream 
+ * @param outLen 
+ * @return unsigned char* 
+ */
 unsigned char *byteStreamReturnUtf16(ByteStream *stream, size_t *outLen){
 
     if(stream == NULL){
@@ -360,7 +510,7 @@ unsigned char *byteStreamReturnUtf16(ByteStream *stream, size_t *outLen){
 
     if(len){
         unsigned char *ret = calloc(sizeof(unsigned char), len + BYTE_PADDING);
-        byteStreamRead(stream, ret, len + 1);   
+        byteStreamRead(stream, ret, len + 2);   
         *outLen = len;
         return ret;
     }
@@ -368,10 +518,13 @@ unsigned char *byteStreamReturnUtf16(ByteStream *stream, size_t *outLen){
     //read no bytes
     *outLen = 0;
     return NULL;
-
-
 }
 
+/**
+ * @brief Prints from the current position of a stream with %x, %c, or %d.
+ * @param formatSpecifier 
+ * @param stream 
+ */
 void byteStreamPrintf(const char *formatSpecifier, ByteStream *stream){
 
     if(stream == NULL){
@@ -402,5 +555,4 @@ void byteStreamPrintf(const char *formatSpecifier, ByteStream *stream){
         }
     }
     printf("]\n");
-
 }

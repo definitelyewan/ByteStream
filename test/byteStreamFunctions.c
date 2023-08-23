@@ -375,8 +375,7 @@ static void byteStreamSearchAndReplace_SearchAndReplace_Setup(void **state){
     
     ByteStream *stream = byteStreamCreate(b, s);
 
-    byteStreamSearchAndReplace(stream, (unsigned char *)"and", 3, (unsigned char *)"???", 3);
-
+    byteStreamSearchAndReplace(stream, (unsigned char *)"and", 3, (unsigned char *)"???", 3);    
     assert_memory_equal("???",(stream->buffer) + 0, 3);
     assert_memory_equal("???",(stream->buffer) + 15, 3);
 
@@ -676,7 +675,7 @@ static void byteStreamReturnAscii_FailWithNoBytes_Setup(void **state){
 static void byteStreamReturnUtf16_Word_Setup(void **state){
     (void) state; //unused
 
-    unsigned char b[] = "\0u\0t\0f\0\0w\0o\0r\0d\0\0t\0e\0s\0t\0\0";
+    unsigned char b[] = "\0u\0t\0f\0\0\0w\0o\0r\0d\0\0\0t\0e\0s\0t\0\0\0";
     unsigned char *read = NULL;
     size_t s = 30;
     size_t out = 0;

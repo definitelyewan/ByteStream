@@ -1,18 +1,30 @@
+/**
+ * @file byteUnicode.c
+ * @author Ewan Jones
+ * @brief functions involving unicode and conversion
+ * @version 1.0.0
+ * @date 2023-08-17
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 #include "byteUnicode.h"
-#include <wchar.h>
-
-//default is little endian because x86 is little endian 
-static bool byteLittleEndian = 1;
 
 /**
- * @brief this function is responsible for changing the endianess of
+ * @brief The endianess of the system. This variable is used to determin if the conversion functions are to use big or little endian while processing. 
+ * 
+ */
+static bool byteLittleEndian = true;
+
+/**
+ * @brief This function is responsible for changing the endianess of
  * encoding conversion functions.
  * 
- * little endian is 1 and big endian is 0.
+ * @details Little endian is 1 and big endian is 0.
  * this function has no return value.
  * @param endianess 
  */
@@ -20,6 +32,17 @@ void byteSetEndianess(bool endianess){
     byteLittleEndian = endianess;
 }
 
+
+/**
+ * @brief Tests if a provided string is encoded as utf8.
+ * @details If the provided parameter is indeed encoded as utf8 this function 
+ * will return true. However, if the provided parameter is encoded as something 
+ * other than utf8 this function will return false. This function will only return 
+ * true or false and never any other value.
+ * @param utf 
+ * @return true 
+ * @return false 
+ */
 bool byteIsUtf8(const unsigned char *utf){
     
     size_t i = 0;
@@ -63,6 +86,12 @@ bool byteIsUtf8(const unsigned char *utf){
     return true;
 }
 
+/**
+ * @brief Calculates the length of a utf16be or utf16le encoded string.
+ * @details An extra 0 byte is required for this function to operate correctly.
+ * @param utf 
+ * @return size_t 
+ */
 size_t byteUtf16Strlen(const unsigned char *utf){
 
     size_t len = 0;
@@ -82,6 +111,13 @@ size_t byteUtf16Strlen(const unsigned char *utf){
 
     return len;
 }
+
+/**
+ * @brief Calculates the length of a string with a provided encoding.
+ * @param encoding 
+ * @param bytes 
+ * @return size_t 
+ */
 
 size_t byteStrlen(unsigned char encoding, const unsigned char *bytes){
 
@@ -104,6 +140,13 @@ size_t byteStrlen(unsigned char encoding, const unsigned char *bytes){
     return 0;
 }
 
+/**
+ * @brief Checks if the provided encoding byte will be recognized by other functions.
+ * @details This function returns true if the encoding is valid and will reutrn false otherwise.
+ * @param encoding 
+ * @return true 
+ * @return false 
+ */
 bool byteIsLegalEncoding(unsigned char encoding){
 
     switch(encoding){
@@ -119,6 +162,23 @@ bool byteIsLegalEncoding(unsigned char encoding){
 
 }
 
+/**
+ * @brief Attempts to convert a provided encoded string to another encoding. 
+ * @details Given a string in, that is encoded as inEncoding and inLen bytes long will be converted
+ * to another string and returned to the caller. The caller specifies the desired encoding by setting
+ * the parameter outEncoding to a valid and supported encoding. A converted string is returned as out
+ * in the form of an address to a heap stored block and its length is provided as the address represented as 
+ * outLen. If successful with its attempt at conversion this function will return true otherwise it will return
+ * false.
+ * @param in 
+ * @param inEncoding 
+ * @param inLen 
+ * @param out 
+ * @param outEncoding 
+ * @param outLen 
+ * @return true 
+ * @return false 
+ */
 bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t inLen, unsigned char **out, unsigned char outEncoding, size_t *outLen){
 
     if((!byteIsLegalEncoding(inEncoding)) || (!byteIsLegalEncoding(outEncoding))){
@@ -311,6 +371,13 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
     return true;
 }
 
+/**
+ * @brief Checks if a unicode string has a byte order mark(BOM).
+ * @details Checks for both little and big endian bom for utf16 if a BOM exists true is returned otherwise false.
+ * @param utf 
+ * @return true 
+ * @return false 
+ */
 bool byteHasBOM(const unsigned char *utf){
 
     if(utf == NULL){
@@ -321,6 +388,17 @@ bool byteHasBOM(const unsigned char *utf){
             (utf[0] == 0xfe && utf[1] == 0xff)) ? true : false;
 }
 
+/**
+ * @brief Adds a byte order mark(BOM) to a given string of the supplied encoding.
+ * @details This function prepends a BOM to a string storeed at the address of utf and updates the
+ * size of said utf string therough the utflen address. This funtion is intended to be used with utf16 and
+ * will not function with other encodingss. If successful this function will return true and false otherwise. 
+ * @param encoding 
+ * @param utf 
+ * @param utfLen 
+ * @return true 
+ * @return false 
+ */
 bool bytePrependBOM(unsigned char encoding, unsigned char **utf, size_t *utfLen){
 
     if(utf == NULL || *utfLen < 2){
@@ -353,6 +431,18 @@ bool bytePrependBOM(unsigned char encoding, unsigned char **utf, size_t *utfLen)
     return true;
 }
 
+/**
+ * @brief Attempts to convert a ascii string to a utf8 string.
+ * @details This function takes an input string, in and its size as inlen and attempts to convert it 
+ * to a utf string as out and its length as outlen. This function my not convert an ascii string in its
+ * entirety in its attempt but will always return a true if successful on exit and false if unsuccessful.
+ * @param out 
+ * @param outlen 
+ * @param in 
+ * @param inlen 
+ * @return true 
+ * @return false 
+ */
 bool byteAsciiToUtf8(unsigned char* out, size_t *outlen, const unsigned char* in, size_t *inlen){
     
     unsigned char* outstart = out;
@@ -397,6 +487,18 @@ bool byteAsciiToUtf8(unsigned char* out, size_t *outlen, const unsigned char* in
     return true;
 }
 
+/**
+ * @brief Attempts to convert a utf8 string to an ascii string.
+ * @details This function takes an input string, in and its size as inlen and attempts to convert it 
+ * to an ascii string as out and its length as outlen. This function my not convert a utf8 string in its
+ * entirety in its attempt but will always return a true if successful on exit and false if unsuccessful.
+ * @param out 
+ * @param outlen 
+ * @param in 
+ * @param inlen 
+ * @return true 
+ * @return false 
+ */
 bool byteUtf8ToAscii(unsigned char* out, size_t *outlen, const unsigned char* in, size_t *inlen){
     
     //do nothing
@@ -480,6 +582,18 @@ bool byteUtf8ToAscii(unsigned char* out, size_t *outlen, const unsigned char* in
     return true;
 }
 
+/**
+ * @brief Attempts to convert a latin1 string to a utf8 string.
+ * @details This function takes an input string, in and its size as inlen and attempts to convert it 
+ * to a utf8 string as out and its length as outlen. This function my not convert a latin1 string in its
+ * entirety in its attempt but will always return a true if successful on exit and false if unsuccessful.
+ * @param out 
+ * @param outlen 
+ * @param in 
+ * @param inlen 
+ * @return true 
+ * @return false 
+ */
 bool byteLat1ToUtf8(unsigned char* out, size_t *outlen, const unsigned char* in, size_t *inlen){
     unsigned char* outstart = out;
     const unsigned char* base = in;
@@ -521,6 +635,18 @@ bool byteLat1ToUtf8(unsigned char* out, size_t *outlen, const unsigned char* in,
     return true;
 }
 
+/**
+ * @brief Attempts to convert a utf8 string to a latin1 string.
+ * @details This function takes an input string, in and its size as inlen and attempts to convert it 
+ * to a latin1 string as out and its length as outlen. This function my not convert a utf8 string in its
+ * entirety in its attempt but will always return a true if successful on exit and false if unsuccessful.
+ * @param out 
+ * @param outlen 
+ * @param in 
+ * @param inlen 
+ * @return true 
+ * @return false 
+ */
 bool byteUtf8ToLat1(unsigned char* out, size_t *outlen, const unsigned char* in, size_t *inlen){
 
     if(in == NULL){
@@ -611,6 +737,18 @@ bool byteUtf8ToLat1(unsigned char* out, size_t *outlen, const unsigned char* in,
     return true;
 }
 
+/**
+ * @brief Attempts to convert a utf16le string to a utf8 string.
+ * @details This function takes an input string, in and its size as inlen and attempts to convert it 
+ * to a utf16le string as out and its length as outlen. This function my not convert a utf16le string in its
+ * entirety in its attempt but will always return a true if successful on exit and false if unsuccessful.
+ * @param out 
+ * @param outlen 
+ * @param inb 
+ * @param inlenb 
+ * @return true 
+ * @return false 
+ */
 bool byteUtf16leToUtf8(unsigned char* out, size_t *outlen, const unsigned char* inb, size_t *inlenb){
 
     unsigned char* outstart = out;
@@ -708,6 +846,18 @@ bool byteUtf16leToUtf8(unsigned char* out, size_t *outlen, const unsigned char* 
     return true;
 }
 
+/**
+ * @brief Attempts to convert a utf8 string to a utf16le string.
+ * @details This function takes an input string, in and its size as inlen and attempts to convert it 
+ * to a utf8 string as out and its length as outlen. This function my not convert a utf8 string in its
+ * entirety in its attempt but will always return a true if successful on exit and false if unsuccessful.
+ * @param outb 
+ * @param outlen 
+ * @param in 
+ * @param inlen 
+ * @return true 
+ * @return false 
+ */
 bool byteUtf8ToUtf16le(unsigned char* outb, size_t *outlen, const unsigned char* in, size_t *inlen){
     unsigned short* out = (unsigned short*) outb;
     const unsigned char* processed = in;
@@ -834,6 +984,18 @@ bool byteUtf8ToUtf16le(unsigned char* outb, size_t *outlen, const unsigned char*
     return true;
 }
 
+/**
+ * @brief Attempts to convert a utf16be string to a utf8 string.
+ * @details This function takes an input string, in and its size as inlen and attempts to convert it 
+ * to a utf8 string as out and its length as outlen. This function my not convert a utf16be string in its
+ * entirety in its attempt but will always return a true if successful on exit and false if unsuccessful.
+ * @param out 
+ * @param outlen 
+ * @param inb 
+ * @param inlenb 
+ * @return true 
+ * @return false 
+ */
 bool byteUtf16beToUtf8(unsigned char* out, size_t *outlen, const unsigned char* inb, size_t *inlenb){
     unsigned char* outstart = out;
     const unsigned char* processed = inb;
@@ -936,6 +1098,18 @@ bool byteUtf16beToUtf8(unsigned char* out, size_t *outlen, const unsigned char* 
     return true;
 }
 
+/**
+ * @brief Attempts to convert a utf8 string to a utf16be string.
+ * @details This function takes an input string, in and its size as inlen and attempts to convert it 
+ * to a utf16be string as out and its length as outlen. This function my not convert a utf8 string in its
+ * entirety in its attempt but will always return a true if successful on exit and false if unsuccessful.
+ * @param outb 
+ * @param outlen 
+ * @param in 
+ * @param inlen 
+ * @return true 
+ * @return false 
+ */
 bool byteUtf8ToUtf16be(unsigned char* outb, size_t *outlen, const unsigned char* in, size_t *inlen){
     unsigned short* out = (unsigned short*) outb;
     const unsigned char* processed = in;
