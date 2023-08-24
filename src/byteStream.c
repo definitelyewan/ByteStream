@@ -15,6 +15,7 @@
 #include "byteStream.h"
 #include "byteTypes.h"
 #include "byteUnicode.h"
+#include "byteInt.h"
 
 /**
  * @brief Creates a ByteStream stucture from a provided file or path
@@ -521,6 +522,41 @@ unsigned char *byteStreamReturnUtf16(ByteStream *stream, size_t *outLen){
 }
 
 /**
+ * @brief Reads an integer from a stream 
+ * 
+ * @param stream 
+ * @return int 
+ */
+int byteStreamReturnInt(ByteStream *stream){
+
+    if(stream == NULL){
+        return 0;
+    }
+
+    //an int is 4 bytes but....
+    int is = 4;
+    unsigned char buff[4] = {0,0,0,0};
+
+    for(int i = 0; i < 4; i++){
+        if(stream->cursor + i == stream->bufferSize){
+            is = i;
+            break;
+        }
+    }
+    
+    if(!(byteStreamRead(stream, buff, is))){
+        return 0;
+    }
+
+
+    return btoi(buff,is);
+}
+
+unsigned int byteStreamReturnSyncInt(ByteStream *stream){
+    return byteSyncintDecode(byteStreamReturnInt(stream));
+}
+
+/**
  * @brief Prints from the current position of a stream with %x, %c, or %d.
  * @param formatSpecifier 
  * @param stream 
@@ -555,4 +591,35 @@ void byteStreamPrintf(const char *formatSpecifier, ByteStream *stream){
         }
     }
     printf("]\n");
+}
+
+
+/**
+ * @brief Rewinds a stream to its starting position.
+ * @param stream 
+ * @return true 
+ * @return false 
+ */
+bool byteStreamRewind(ByteStream *stream){
+    if(stream == NULL){
+        return false;
+    }
+
+    stream->cursor = 0;
+
+    return true;
+}
+
+/**
+ * @brief Provides the number of bytes the caller is from the beginning of the stream.
+ * @details This function will return EOF or -1 if it fails to read the provided stream otherwise, it will return a positive value. 
+ * @param stream 
+ * @return long int 
+ */
+long int byteStreamTell(ByteStream *stream){
+    if(stream == NULL){
+        return EOF;
+    }
+
+    return stream->cursor;
 }

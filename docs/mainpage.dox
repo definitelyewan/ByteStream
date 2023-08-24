@@ -180,7 +180,7 @@ int main(int argc, char *argv[]){
   byteStreamWrite(stream, "carrot", byteStrlen(BYTE_ASCII,"carrot"));
   
   /* rewind the stream so we can read from it again */
-  byteStreamSeek(stream, 0, SEEK_SET);
+  byteStreamRewind(stream);
   
   /* read utf8 value */
   utf8 = byteStreamReturnUtf8(stream,&s);

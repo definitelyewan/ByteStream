@@ -8,6 +8,27 @@
 #include <string.h>
 #include <byteStream.h>
 
+static void byteStreamFromFile_Normal_Setup(void **state){
+    (void) state; /* unused */
+
+    ByteStream *stream = NULL;
+
+    stream = byteStreamFromFile("assets/latin1.txt");
+
+    assert_non_null(stream->buffer);
+    byteStreamDestroy(stream);
+}
+
+static void byteStreamFromFile_Fail_Setup(void **state){
+    (void) state; /* unused */
+
+    ByteStream *stream = NULL;
+
+    stream = byteStreamFromFile("assets/latin1.sdsdtxt");
+
+    assert_null(stream);
+}
+
 static void byteStreamCreate_Normal_Setup(void **state){
     (void) state; /* unused */
 
@@ -718,9 +739,116 @@ static void byteStreamReturnUtf16_FullBuffer_Setup(void **state){
     byteStreamDestroy(stream);
 }
 
+static void byteStreamReturnInt_4bytes_Setup(void **state){
+    (void) state; //unused
+
+    ByteStream *stream = byteStreamCreate(NULL, 10);
+    byteStreamWrite(stream, "\0\0\x01\xa4",4);
+    byteStreamSeek(stream, 0, SEEK_SET);
+    int d = byteStreamReturnInt(stream);
+    assert_int_equal(d,420);
+    byteStreamDestroy(stream);
+}
+
+static void byteStreamReturnInt_smallStream_Setup(void **state){
+    (void) state; //unused
+
+    ByteStream *stream = byteStreamCreate(NULL, 2);
+    byteStreamWrite(stream, "\x01\xa4",2);
+    byteStreamSeek(stream, 0, SEEK_SET);
+    int d = byteStreamReturnInt(stream);
+    assert_int_equal(d,420);
+    byteStreamDestroy(stream);
+}
+
+static void byteStreamReturnInt_Fail_Setup(void **state){
+    (void) state; //unused
+    int d = byteStreamReturnInt(NULL);
+    assert_int_equal(d,0);
+}
+
+static void byteStreamReturnSyncInt_4bytes_Setup(void **state){
+    (void) state; //unused 9992
+    ByteStream *stream = byteStreamCreate(NULL, 10);
+    byteStreamWrite(stream, "\0\0\x27\x08", 4);
+    byteStreamSeek(stream, 0, SEEK_SET);
+    int d = byteStreamReturnSyncInt(stream);
+    assert_int_equal(d,5000);
+    byteStreamDestroy(stream);
+}
+
+static void byteStreamReturnSyncInt_smallStream_Setup(void **state){
+    (void) state; //unused
+    ByteStream *stream = byteStreamCreate(NULL, 2);
+    byteStreamWrite(stream, "\x27\x08", 2);
+    byteStreamSeek(stream, 0, SEEK_SET);
+    int d = byteStreamReturnSyncInt(stream);
+    assert_int_equal(d,5000);
+    byteStreamDestroy(stream);
+}
+
+static void byteStreamReturnSyncInt_Fail_Setup(void **state){
+    (void) state; //unused
+    int d = byteStreamReturnSyncInt(NULL);
+    assert_int_equal(d,0);
+}
+
+static void byteStreamRewind_Normal_Setup(void **state){
+    (void) state; //unused
+
+    unsigned char b[] = "u\0t\0f\0 \0w\0o\0r\0d\0 \0t\0e\0s\0t\0\0";
+    size_t s = 30;
+    ByteStream *stream = byteStreamCreate(b, s);
+    byteStreamSeek(stream, 15, SEEK_SET);
+    bool v = byteStreamRewind(stream);
+    assert_true(v);
+    assert_int_equal(stream->cursor,0);
+    byteStreamDestroy(stream);
+}
+
+static void byteStreamRewind_Normal2_Setup(void **state){
+    (void) state; //unused
+
+    ByteStream *stream = byteStreamCreate(NULL, 10);
+    byteStreamSeek(stream, 10, SEEK_SET);
+    bool v = byteStreamRewind(stream);
+    assert_true(v);
+    assert_int_equal(stream->cursor,0);
+    byteStreamDestroy(stream);
+}
+
+static void byteStreamRewind_Fail_Setup(void **state){
+    (void) state; //unused
+
+    bool v = byteStreamRewind(NULL);
+    assert_false(v);
+}
+
+static void byteStreamTell_Normal_Setup(void **state){
+    (void) state; //unused
+    ByteStream *stream = byteStreamCreate(NULL, 10);
+    
+    assert_int_equal(byteStreamTell(stream),0);
+
+    byteStreamSeek(stream, 5, SEEK_SET);
+
+    assert_int_equal(byteStreamTell(stream),5);
+
+    byteStreamDestroy(stream);
+}
+
+static void byteStreamTell_Fail_Setup(void **state){
+    (void) state; //unused
+
+    assert_int_equal(byteStreamTell(NULL),EOF);
+}
+
 int main(){
     
     const struct CMUnitTest tests[] = {
+        //byteStreamFromFile tests
+        cmocka_unit_test(byteStreamFromFile_Normal_Setup),
+        cmocka_unit_test(byteStreamFromFile_Fail_Setup),
         //byteStreamCreate tests
         cmocka_unit_test(byteStreamCreate_Normal_Setup),
         cmocka_unit_test(byteStreamCreate_Normal2_Setup),
@@ -779,6 +907,25 @@ int main(){
         //byteStreamReturnUtf16
         cmocka_unit_test(byteStreamReturnUtf16_Word_Setup),
         cmocka_unit_test(byteStreamReturnUtf16_FullBuffer_Setup),
+        
+        //byteStreamReturnInt
+        cmocka_unit_test(byteStreamReturnInt_4bytes_Setup),
+        cmocka_unit_test(byteStreamReturnInt_smallStream_Setup),
+        cmocka_unit_test(byteStreamReturnInt_Fail_Setup),
+        //byteStreamReturnSyncInt
+        cmocka_unit_test(byteStreamReturnSyncInt_4bytes_Setup),
+        cmocka_unit_test(byteStreamReturnSyncInt_smallStream_Setup),
+        cmocka_unit_test(byteStreamReturnSyncInt_Fail_Setup),
+
+
+        //byteStreamRewind
+        cmocka_unit_test(byteStreamRewind_Normal_Setup),
+        cmocka_unit_test(byteStreamRewind_Normal2_Setup),
+        cmocka_unit_test(byteStreamRewind_Fail_Setup),
+        //byteStreamTell
+        cmocka_unit_test(byteStreamTell_Normal_Setup),
+        cmocka_unit_test(byteStreamTell_Fail_Setup),
+
     };
 
     return cmocka_run_group_tests(tests, NULL, NULL);

@@ -39,9 +39,13 @@ unsigned char *byteStreamReturnAscii(ByteStream *stream, size_t *outLen);
 unsigned char *byteStreamReturnLatin1(ByteStream *stream, size_t *outLen);
 unsigned char *byteStreamReturnUtf8(ByteStream *stream, size_t *outLen);
 unsigned char *byteStreamReturnUtf16(ByteStream *stream, size_t *outLen);
+int byteStreamReturnInt(ByteStream *stream);
+unsigned int byteStreamReturnSyncInt(ByteStream *stream);
 
 //util
 void byteStreamPrintf(const char *formatSpecifier, ByteStream *stream);
+bool byteStreamRewind(ByteStream *stream);
+long int byteStreamTell(ByteStream *stream);
 
 
 #ifdef __cplusplus

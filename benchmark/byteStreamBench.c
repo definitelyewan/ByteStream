@@ -150,6 +150,22 @@ static void byteStreamReturnUtf16_Bench(ByteStream **stream){
     ret = byteStreamReturnUtf16(*stream, &size);
 }
 
+static void byteStreamReturnInt_Bench(ByteStream **stream){
+    byteStreamReturnInt(*stream);
+}
+
+static void byteStreamReturnSyncInt_Bench(ByteStream **stream){
+    byteStreamReturnInt(*stream);
+}
+
+static void byteStreamRewind_Bench(ByteStream **stream){
+    byteStreamRewind(*stream);
+}
+
+static void byteStreamTell_Bench(ByteStream **stream){
+    byteStreamRewind(*stream);
+}
+
 int main(){
 
     ByteStream *stream = NULL;
@@ -270,6 +286,30 @@ int main(){
     free(ret);
     functionRunner("byteStreamReturnUtf16","Return the third utf16 str", &stream, byteStreamReturnUtf16_Bench);
     free(ret);
+    byteStreamDestroy(stream);
+    printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
+
+    //byteStreamReturnInt benchmark
+    stream = byteStreamCreate(NULL, 8);
+    byteStreamWrite(stream, "\0\0\0\xfe", 4);
+    byteStreamWrite(stream, "\0\0\0\x03", 4);
+    byteStreamSeek(stream, 0, SEEK_SET);
+    functionRunner("byteStreamReturnInt","return 254", &stream, byteStreamReturnInt_Bench);
+    functionRunner("byteStreamReturnInt","return 3", &stream, byteStreamReturnInt_Bench);
+    byteStreamRewind(stream);
+    printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
+    
+    //byteStreamReturnSyncInt
+    functionRunner("byteStreamReturnSyncInt","return 254 as syncint", &stream, byteStreamReturnSyncInt_Bench);
+    functionRunner("byteStreamReturnSyncInt","return 3 as syncint", &stream, byteStreamReturnSyncInt_Bench);
+    printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
+    
+    //byteStreamRewind
+    functionRunner("byteStreamRewind","rewind the stream", &stream, byteStreamRewind_Bench);
+    printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
+    
+    //byteStreamTell
+    functionRunner("byteStreamTell","how many bytes into the stream am i?", &stream, byteStreamTell_Bench);
     byteStreamDestroy(stream);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 

@@ -17,9 +17,6 @@ extern "C"{
 
 #include "byteTypes.h"
 
-//system
-void byteSetEndianess(bool endianess);
-
 bool byteIsUtf8(const unsigned char *utf);
 size_t byteStrlen(unsigned char encoding, const unsigned char *bytes);
 bool byteIsLegalEncoding(unsigned char encoding);

@@ -11,12 +11,16 @@ set(BYTESTREAM_HEADERS
   "${CMAKE_SOURCE_DIR}/include/byteTypes.h"
   "${CMAKE_SOURCE_DIR}/include/byteUnicode.h"
   "${CMAKE_SOURCE_DIR}/include/byteStream.h"
+  "${CMAKE_SOURCE_DIR}/include/byteEndian.h"
+  "${CMAKE_SOURCE_DIR}/include/byteInt.h"
 )
 
 
 set(BYTESTREAM_SRC
   "${CMAKE_CURRENT_SOURCE_DIR}/src/modules/byteUnicode.c"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/modules/byteEndian.c"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/byteStream.c"
+  "${CMAKE_SOURCE_DIR}/src/modules/byteInt.c"
 )
 
 add_library(ByteStream ${BYTESTREAM_HEADERS} ${BYTESTREAM_SRC})

@@ -8,3 +8,5 @@ fi
 cd build/benchmark/
 ./stream_bench
 ./unicode_bench
+./endian_bench
+./int_bench

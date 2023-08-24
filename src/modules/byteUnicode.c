@@ -13,25 +13,7 @@
 #include <string.h>
 #include <stdint.h>
 #include "byteUnicode.h"
-
-/**
- * @brief The endianess of the system. This variable is used to determin if the conversion functions are to use big or little endian while processing. 
- * 
- */
-static bool byteLittleEndian = true;
-
-/**
- * @brief This function is responsible for changing the endianess of
- * encoding conversion functions.
- * 
- * @details Little endian is 1 and big endian is 0.
- * this function has no return value.
- * @param endianess 
- */
-void byteSetEndianess(bool endianess){
-    byteLittleEndian = endianess;
-}
-
+#include "byteEndian.h"
 
 /**
  * @brief Tests if a provided string is encoded as utf8.
@@ -771,7 +753,7 @@ bool byteUtf16leToUtf8(unsigned char* out, size_t *outlen, const unsigned char* 
 
     while((in < inend) && (out - outstart + 5 < *outlen)){
         
-        if(byteLittleEndian){
+        if(byteEndianess()){
             c = *in++;
         }else{
             tmp = (unsigned char *) in;
@@ -786,7 +768,7 @@ bool byteUtf16leToUtf8(unsigned char* out, size_t *outlen, const unsigned char* 
                 break;
             }
 
-            if(byteLittleEndian){
+            if(byteEndianess()){
                 d = *in++;
 
             }else{
@@ -939,7 +921,7 @@ bool byteUtf8ToUtf16le(unsigned char* outb, size_t *outlen, const unsigned char*
                 break;
             }
                 
-            if(byteLittleEndian){
+            if(byteEndianess()){
                 *out++ = c;
             }else{
                 tmp = (unsigned char *) out;
@@ -955,7 +937,7 @@ bool byteUtf8ToUtf16le(unsigned char* outb, size_t *outlen, const unsigned char*
             
             c -= 0x10000;
 
-            if(byteLittleEndian){
+            if(byteEndianess()){
                 *out++ = 0xD800 | (c >> 10);
                 *out++ = 0xDC00 | (c & 0x03FF);
             
@@ -1016,7 +998,7 @@ bool byteUtf16beToUtf8(unsigned char* out, size_t *outlen, const unsigned char* 
     inend = in + inlen;
 
     while(in < inend){
-        if(byteLittleEndian){
+        if(byteEndianess()){
             tmp = (unsigned char *) in;
             c = *tmp++;
             c = c << 8;
@@ -1036,7 +1018,7 @@ bool byteUtf16beToUtf8(unsigned char* out, size_t *outlen, const unsigned char* 
                 return false;
             }
 
-            if(byteLittleEndian){
+            if(byteEndianess()){
                 tmp = (unsigned char *) in;
                 d = *tmp++;
                 d = d << 8;
@@ -1190,7 +1172,7 @@ bool byteUtf8ToUtf16be(unsigned char* outb, size_t *outlen, const unsigned char*
                 break;
             }
             
-            if(byteLittleEndian){
+            if(byteEndianess()){
                 tmp = (unsigned char *) out;
                 *tmp = c >> 8;
                 *(tmp + 1) = c;
@@ -1207,7 +1189,7 @@ bool byteUtf8ToUtf16be(unsigned char* outb, size_t *outlen, const unsigned char*
 
             c -= 0x10000;
 
-            if (byteLittleEndian){
+            if (byteEndianess()){
                 tmp1 = 0xD800 | (c >> 10);
                 tmp = (unsigned char *) out;
                 *tmp = tmp1 >> 8;
