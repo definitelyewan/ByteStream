@@ -593,7 +593,6 @@ void byteStreamPrintf(const char *formatSpecifier, ByteStream *stream){
     printf("]\n");
 }
 
-
 /**
  * @brief Rewinds a stream to its starting position.
  * @param stream 

@@ -33,7 +33,7 @@ of how you would create a stream using this library.
 
 @code
 #include <stdio.h>
-#include <byteStream.h>
+#include <ByteStream/byteStream.h>
 
 int main(int argc, char *argv[]){
   
@@ -66,7 +66,7 @@ The following example will cover how to read data throughout a stream.
 @code
 #include <stdio.h>
 #include <stdlib.h>
-#include <byteStream.h>
+#include <ByteStream/byteStream.h>
 
 int main(int argc, char *argv[]){
   
@@ -121,7 +121,7 @@ The bellow example will cover hot to write data to a stream.
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <byteStream.h>
+#include <ByteStream/byteStream.h>
 
 int main(int argc, char *argv[]){
   
@@ -156,8 +156,8 @@ reading and writing these kinds of values.
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <byteStream.h>
-#include <byteUnicode.h>
+#include <ByteStream/byteStream.h>
+#include <ByteStream/byteUnicode.h>
 
 int main(int argc, char *argv[]){
   
@@ -201,6 +201,34 @@ int main(int argc, char *argv[]){
   byteStreamDestroy(stream);
 }
 
+@endcode
+
+ByteStream adds support for reading both integers and Sync Safe integers, the bellow example will revolve around
+reading and writing these kinds of values.
+
+@code
+#include <stdio.h>
+#include <stdlib.h>
+#include <ByteStream/byteStream.h>
+#include <ByteStream/byteInt.h>
+
+int main(int argc, char *argv[]){
+  
+  
+  /* create a stream */
+  ByteStream *stream = byteStreamCreate("\0\0\0\x03",4);
+  
+  /* Read a standard 4 byte Int */
+  int d = byteStreamReturnInt(stream);
+  printf("%d\n",d);
+  byteStreamRewind(stream);
+  
+  /* Read a Safe Sync Int */
+  d = byteStreamReturnSyncInt(stream);
+  printf("%d\n",d);
+  /* free */
+  byteStreamDestroy(stream);
+}
 @endcode
 
 */
