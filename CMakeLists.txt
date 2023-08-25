@@ -43,7 +43,7 @@ endif()
 if(UNIX AND NOT APPLE)
   include(GNUInstallDirs)
   install(TARGETS ByteStream DESTINATION "/usr/lib")
-  install(FILES ${BYTESTREAM_HEADERS} DESTINATION "/usr/include")
+  install(FILES ${BYTESTREAM_HEADERS} DESTINATION "/usr/include/ByteStream")
 
   include(InstallRequiredSystemLibraries)
   set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
