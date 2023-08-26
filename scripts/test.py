@@ -4,17 +4,19 @@ import subprocess
 import errno
 
 #where are the docs
-docDir = ""
+testDir = ""
 
 if platform == "linux" or platform == "linux2" or "darwin":
-    docDir = "build/test"
+    testDir = "build/test"
 elif platform == "win32":
-    docDir = ".\\build\\test"
+    testDir = ".\\build\\test"
 else:
     quit()
 
-if os.path.exists(docDir):
-    os.chdir(docDir)
+if os.path.exists(testDir):
+    os.chdir(testDir)
+else:
+    quit()
 
 #call test execs
 try:

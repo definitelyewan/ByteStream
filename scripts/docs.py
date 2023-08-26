@@ -17,6 +17,8 @@ else:
 
 if os.path.exists(docDir):
     os.chdir(docDir)
+else:
+    quit()
 
 #call doxygen
 try:
