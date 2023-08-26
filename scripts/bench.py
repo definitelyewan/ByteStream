@@ -3,7 +3,7 @@ from sys import platform
 import subprocess
 import errno
 
-#where are the docs
+#where are the benchs
 benchDir = ""
 
 if platform == "linux" or platform == "linux2" or "darwin":
