@@ -1,10 +1,10 @@
-cmake_minimum_required(VERSION 3.27.1)
+cmake_minimum_required(VERSION 3.22.1)
 project(ByteStream VERSION 1.0.0.0)
 
-option(BUILD_SHARED_LIBS "building a shared lib" ON)
+option(BUILD_SHARED_LIBS "building a shared lib" OFF)
 option(BUILD_TESTS "build tests" OFF)
 option(BUILD_BENCHMARKS "build benchmarks" OFF)
-option(BUILD_DOCS "build documentation" ON)
+option(BUILD_DOCS "build documentation" OFF)
 
 set(BYTESTREAM_HEADERS
   "${CMAKE_SOURCE_DIR}/include/byteDefines.h"
@@ -49,10 +49,12 @@ if(UNIX AND NOT APPLE)
   set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
   set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
   set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
-  include(CPack)
+  
 elseif(WIN32)
-#i dont know how to do this :(
+
 elseif(APPLE)
 #i dont have mac hardware :(
+
+include(CPack)
 endif()
 

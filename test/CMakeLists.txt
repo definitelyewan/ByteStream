@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27.1)
+cmake_minimum_required(VERSION 3.22.1)
 
 find_library(CMOCKA_LIBRARIES REQUIRED NAMES cmocka)
 if(CMOCKA_LIBRARIES)

@@ -1,36 +1,49 @@
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <limits.h>
+#include <byteStream.h>
+
+#ifdef __linux__
+#define _GNU_SOURCE
 #include <unistd.h>
 #include <asm/unistd.h>
 #include <linux/perf_event.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
-#include <time.h>
-
-#include <byteStream.h>
-
-unsigned char buffer[500];
-unsigned char *ret;
-size_t size;
-
-void benchPrintf(const char *functionName, const char *desc, double start, double end, unsigned long long instructions){
-        printf("| %-26s | %-40s | %-15f | %-15llu |\n", functionName, 
-                                                        desc, 
-                                                        ((double) end - start) / (CLOCKS_PER_SEC / 1000),
-                                                        instructions);
-}
 
 //example from man page
 long perf_event_open(struct perf_event_attr *hw_event, pid_t pid, int cpu, int group_fd, unsigned long flags){
     return syscall(__NR_perf_event_open, hw_event, pid, cpu, group_fd, flags);
 }
 
+#endif
+
+#ifdef _WIN32
+#include <windows.h>
+#include <intrin.h>
+#endif
+
+unsigned char buffer[500];
+unsigned char *ret;
+size_t size;
+
+void benchPrintf(const char *functionName, const char *desc, double time, unsigned long long instructions){
+        printf("| %-26s | %-40s | %-15f | %-15llu |\n", functionName, 
+                                                        desc, 
+                                                        time,
+                                                        instructions);
+}
+
 void functionRunner(const char *name, const char *desc, ByteStream **stream, void (*functionPtr)(ByteStream **)){
+    
+    unsigned long long instrcutions = 0.0;
+    double time = 0.0;
+
+#ifdef __linux__
     struct perf_event_attr pe;
     int fd;
-    unsigned long long instrcutions;
     clock_t start;
     clock_t end;
 
@@ -59,17 +72,50 @@ void functionRunner(const char *name, const char *desc, ByteStream **stream, voi
     ioctl(fd, PERF_EVENT_IOC_DISABLE, 0);
     read(fd, &instrcutions, sizeof(unsigned long long));
     close(fd);
+    time = ((double) end - start) / (CLOCKS_PER_SEC / 1000);
 
-    benchPrintf(name, desc, start, end, instrcutions);
+#endif
+#ifdef _WIN32
+
+    LARGE_INTEGER frequency;
+    LARGE_INTEGER start;
+    LARGE_INTEGER end;
+    unsigned long long istart = 0;
+    unsigned long long iend = 0;
+
+    //for time
+    QueryPerformanceFrequency(&frequency);
+    QueryPerformanceCounter(&start);
+    
+    //for instructions on x86
+    istart = __rdtsc();
+    functionPtr(stream);
+    iend = __rdtsc();
+    QueryPerformanceCounter(&end);
+    time = (double) ((end.QuadPart - start.QuadPart) * 1000.0) / frequency.QuadPart;
+    instrcutions = iend - istart;
+
+#endif
+    benchPrintf(name, desc, time, instrcutions);
 }
 
 
 static void byteStreamFromFile_Bench(ByteStream **stream){
-    *stream = byteStreamFromFile("utf16.txt");
+#ifdef __linux__    
+    *stream = byteStreamFromFile("assets/utf16.txt");
+#endif
+#ifdef _WIN32
+    *stream = byteStreamFromFile("..\\assets\\utf16.txt");
+#endif
 }
 
 static void byteStreamFromFileV2_Bench(ByteStream **stream){
-    *stream = byteStreamFromFile("latin1.txt");
+#ifdef __linux__    
+    *stream = byteStreamFromFile("assets/latin1.txt");
+#endif
+#ifdef _WIN32
+    *stream = byteStreamFromFile("..\\assets\\latin1.txt");
+#endif
 }
 
 static void byteStreamCreate_Bench(ByteStream **stream){
@@ -178,6 +224,7 @@ int main(){
      * for byteStreamReturnAscii
      */
 
+    printf("%s\n",__FILE__);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
     printf("| %-26s | %-40s | %-15s | %-15s |\n", "Function Name", "Description", "Run Time (ms)", "Instructions");
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
@@ -200,7 +247,12 @@ int main(){
     stream = byteStreamCreate(NULL, 10);
     functionRunner("byteStreamRead","Read 5 bytes", &stream, byteStreamRead_Bench);
     byteStreamDestroy(stream);
+#ifdef __linux__
     stream = byteStreamFromFile("assets/utf8-complex.txt");
+#endif
+#ifdef _WIN32
+    stream = byteStreamFromFile("..\\assets\\utf8-complex.txt");
+#endif
     functionRunner("byteStreamRead","Read 1k bytes from utf8-complex.txt", &stream, byteStreamReadV2_Bench);
     byteStreamDestroy(stream);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
@@ -214,35 +266,66 @@ int main(){
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     //byteStreamReadUntil benchmark
+#ifdef __linux__
     stream = byteStreamFromFile("assets/utf8-complex.txt");
+#endif
+#ifdef _WIN32
+    stream = byteStreamFromFile("..\\assets\\utf8-complex.txt");
+#endif
     functionRunner("byteStreamReadUntil","Read until 0xEF ~11862 bytes", &stream, byteStreamReadUntil_Bench);
     byteStreamDestroy(stream);
     free(ret);
+#ifdef __linux__
     stream = byteStreamFromFile("assets/ascii.txt");
+#endif
+#ifdef _WIN32
+    stream = byteStreamFromFile("..\\assets\\ascii.txt");
+#endif
     functionRunner("byteStreamReadUntil","Read until \'p\' 1 byte", &stream, byteStreamReadUntilV2_Bench);
     byteStreamDestroy(stream);
     free(ret);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     //byteStreamSearchAndReplace benchmark
+#ifdef __linux__
     stream = byteStreamFromFile("assets/utf8-simple.txt");
+#endif
+#ifdef _WIN32
+    stream = byteStreamFromFile("..\\assets\\utf8-simple.txt");
+#endif
     functionRunner("byteStreamSearchAndReplace","Replace \"Cyrillic\" with nothing", &stream, byteStreamSearchAndReplace_Bench);
     byteStreamDestroy(stream);
+#ifdef __linux__
     stream = byteStreamFromFile("assets/utf8-complex.txt");
+#endif
+#ifdef _WIN32
+    stream = byteStreamFromFile("..\\assets\\utf8-complex.txt");
+#endif
     functionRunner("byteStreamSearchAndReplace","Change euros to dollars", &stream, byteStreamSearchAndReplaceV2_Bench);
     byteStreamDestroy(stream);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     //byteStreamCursor benchmark
+#ifdef __linux__
     stream = byteStreamFromFile("assets/utf16.txt");
+#endif
+#ifdef _WIN32
+    stream = byteStreamFromFile("..\\assets\\utf16.txt");
+#endif
     functionRunner("byteStreamCursor","Return cursor", &stream, byteStreamCursor_Bench);
+    
     stream->cursor = 128;
     functionRunner("byteStreamCursor","Return cursor again", &stream, byteStreamCursor_Bench);
     byteStreamDestroy(stream);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     //byteStreamgetCh benchmark
+#ifdef __linux__
     stream = byteStreamFromFile("assets/utf16.txt");
+#endif
+#ifdef _WIN32
+    stream = byteStreamFromFile("..\\assets\\utf16.txt");
+#endif
     functionRunner("byteStreamGetCh","Return first byte", &stream, byteStreamGetCh_Bench);
     stream->cursor = 128;
     functionRunner("byteStreamGetCh","Return the 128th byte", &stream, byteStreamGetCh_Bench);
@@ -258,14 +341,24 @@ int main(){
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     //byteStreamWriteAtPosition benchmark
+#ifdef __linux__
     stream = byteStreamFromFile("assets/utf16.txt");
+#endif
+#ifdef _WIN32
+    stream = byteStreamFromFile("..\\assets\\utf16.txt");
+#endif
     functionRunner("byteStreamWriteAtPosition","Write at the 100th byte", &stream, byteStreamWriteAtPosition_Bench);
     functionRunner("byteStreamWriteAtPosition","Write at the 50th byte", &stream, byteStreamWriteAtPositionV2_Bench);
     byteStreamDestroy(stream);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
 
     //byteStreamReturnAscii benchmark
+#ifdef __linux__
     stream = byteStreamFromFile("assets/ascii.txt");
+#endif
+#ifdef _WIN32
+    stream = byteStreamFromFile("..\\assets\\ascii.txt");
+#endif
     byteStreamSearchAndReplace(stream, (unsigned char *)"\n", 1, (unsigned char *)"\0", 1);
     byteStreamSearchAndReplace(stream, (unsigned char *)" ", 1, (unsigned char *)"\0", 1);
     functionRunner("byteStreamReturnAscii","Return the first ascii str", &stream, byteStreamReturnAscii_Bench);
@@ -278,7 +371,12 @@ int main(){
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
     
     //byteStreamReturnUtf16 benchmark
+#ifdef __linux__
     stream = byteStreamFromFile("assets/utf16.txt");
+#endif
+#ifdef _WIN32
+    stream = byteStreamFromFile("..\\assets\\utf16.txt");
+#endif
     byteStreamSearchAndReplace(stream, (unsigned char *)"\n", 1, (unsigned char *)"\0", 1);
     functionRunner("byteStreamReturnUtf16","Return the first utf16 str", &stream, byteStreamReturnUtf16_Bench);
     free(ret);
@@ -312,6 +410,5 @@ int main(){
     functionRunner("byteStreamTell","how many bytes into the stream am i?", &stream, byteStreamTell_Bench);
     byteStreamDestroy(stream);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
-
     return 0;
 }

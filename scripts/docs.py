@@ -3,6 +3,31 @@ from sys import platform
 import subprocess
 import errno
 import webbrowser
+import shutil
+
+#mk build
+print("Creating build dir")
+if not os.path.exists("build"):
+    os.mkdir("build")
+else:
+    shutil.rmtree("build")
+    os.mkdir("build")
+
+#build lib
+try:
+    if platform == "linux" or platform == "linux2" or platform == "darwin":
+        subprocess.call(["cmake", "-S", ".", "-B", "./build", "-DBUILD_DOCS=ON"])
+    elif platform == "win32":
+        subprocess.call(["cmake", "-S", ".", "-B", ".\\build", "-DBUILD_DOCS=ON"])
+
+except OSError as e:
+    if e.errno == errno.ENOENT:
+        #program was not found
+        print("cmake was not found or not installed")
+        quit()
+    else:
+        #program output
+        raise
 
 
 #where are the docs
@@ -11,7 +36,7 @@ docDir = ""
 if platform == "linux" or platform == "linux2" or "darwin":
     docDir = "build/docs"
 elif platform == "win32":
-    docDir = ".\\build\\doc"
+    docDir = "build\\doc"
 else:
     quit()
 

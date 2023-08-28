@@ -1,8 +1,4 @@
-cmake_minimum_required(VERSION 3.27.1)
-
-if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Linux")
-    messgae(FATAL_ERROR "benchmarks depend on linux to count cpu cycles")
-endif()
+cmake_minimum_required(VERSION 3.22.1)
 
 set(BENCH_BYTESTREAM "${CMAKE_CURRENT_SOURCE_DIR}/byteStreamBench.c")
 set(BENCH_BYTEUNICODE "${CMAKE_CURRENT_SOURCE_DIR}/byteUnicodeBench.c")

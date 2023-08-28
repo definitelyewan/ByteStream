@@ -564,7 +564,7 @@ unsigned int byteStreamReturnSyncInt(ByteStream *stream){
 void byteStreamPrintf(const char *formatSpecifier, ByteStream *stream){
 
     if(stream == NULL){
-        printf("\n");
+        printf("[]\n");
         return;
     }
 

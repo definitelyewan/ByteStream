@@ -1,34 +1,51 @@
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <limits.h>
+#include <byteInt.h>
+
+#ifdef __linux__
+#define _GNU_SOURCE
 #include <unistd.h>
 #include <asm/unistd.h>
 #include <linux/perf_event.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
-#include <time.h>
-#include <limits.h>
-#include <byteInt.h>
-
-char *ret;
-
-void benchPrintf(const char *functionName, const char *desc, double start, double end, unsigned long long instructions){
-        printf("| %-26s | %-40s | %-15f | %-15llu |\n", functionName, 
-                                                        desc, 
-                                                        ((double) end - start) / (CLOCKS_PER_SEC / 1000),
-                                                        instructions);
-}
 
 //example from man page
 long perf_event_open(struct perf_event_attr *hw_event, pid_t pid, int cpu, int group_fd, unsigned long flags){
     return syscall(__NR_perf_event_open, hw_event, pid, cpu, group_fd, flags);
 }
 
+#endif
+
+#ifdef _WIN32
+#include <windows.h>
+#include <intrin.h>
+#endif
+
+char *ret;
+
+void benchPrintf(const char *functionName, const char *desc, double time, unsigned long long instructions){
+        printf("| %-26s | %-40s | %-15f | %-15llu |\n", functionName, 
+                                                        desc, 
+                                                        time,
+                                                        instructions);
+}
+
+
+
 void functionRunner(const char *name, const char *desc, void (*functionPtr)(void)){
+    
+    unsigned long long instrcutions = 0.0;
+    double time = 0;
+
+#ifdef __linux__
+
     struct perf_event_attr pe;
     int fd;
-    unsigned long long instrcutions;
+    
     clock_t start;
     clock_t end;
 
@@ -57,8 +74,33 @@ void functionRunner(const char *name, const char *desc, void (*functionPtr)(void
     ioctl(fd, PERF_EVENT_IOC_DISABLE, 0);
     read(fd, &instrcutions, sizeof(unsigned long long));
     close(fd);
+    time = ((double) end - start) / (CLOCKS_PER_SEC / 1000);
 
-    benchPrintf(name, desc, start, end, instrcutions);
+#endif
+
+#ifdef _WIN32
+
+    LARGE_INTEGER frequency;
+    LARGE_INTEGER start;
+    LARGE_INTEGER end;
+    unsigned long long istart = 0;
+    unsigned long long iend = 0;
+
+    //for time
+    QueryPerformanceFrequency(&frequency);
+    QueryPerformanceCounter(&start);
+    
+    //for instructions on x86
+    istart = __rdtsc();
+    functionPtr();
+    iend = __rdtsc();
+    QueryPerformanceCounter(&end);
+    time = (double) ((end.QuadPart - start.QuadPart) * 1000.0) / frequency.QuadPart;
+    instrcutions = iend - istart;
+
+#endif
+
+    benchPrintf(name, desc, time, instrcutions);
 }
 
 static void btoi_bench(void){
@@ -86,7 +128,7 @@ static void byteSyncintEncode_bench(void){
 }
 
 int main(){
-
+    printf("%s\n",__FILE__);
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
     printf("| %-26s | %-40s | %-15s | %-15s |\n", "Function Name", "Description", "Run Time (ms)", "Instructions");
     printf("+----------------------------+------------------------------------------+-----------------------------------+\n");
