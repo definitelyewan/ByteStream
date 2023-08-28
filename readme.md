@@ -18,4 +18,4 @@ done on x86 platforms such as Intel and AMD.
  - 100% test coverage
  - 100% benchmark coverage
 
-All documentation, tests, benchmarks, builds, and installers can be generated using the provided pythons scripts located in scripts/
+All documentation, tests, benchmarks, builds, and installers can be generated using the provided python3 scripts located in scripts/
