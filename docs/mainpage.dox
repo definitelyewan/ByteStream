@@ -231,4 +231,32 @@ int main(int argc, char *argv[]){
 }
 @endcode
 
+
+@section main-install Building, Benchmarking, Testing, and Installation
+The ByteStream repo comes with multiple Python3 scripts aimed at ease of use for verifying tests and benchmarks as well as installation and building. All of these scripts are located in the scripts folder found with your copy of ByteStream, but please note these scripts must be run from the root directory of your copy.
+
+Tests can be run on any operating system with support for the cmocka library.
+@code 
+python scripts/test.py
+@endcode
+
+Benchmarks can be run on any linux or windows operating system exclusivly as the methods used for execution time and instruction counting are platform specific. In the future if I come across any apple hardware I will make sure to add support for MAC OS.
+@code 
+python scripts/bench.py
+@endcode
+
+This library can be built using the build script within the scripts directory and by default creates a shared library as either a .so or .dll.
+@code 
+python scripts/build.py
+@endcode
+
+ByteStream can be installed using the install script provided with this copy however, at theis moment the script only has full support for linux. This script can be used on other operating systems but the compiled library will be located in build/ or build/Release. From this point on you are on your own and it is up to you to figure out where it should go.
+@code 
+python scripts/install.py
+@endcode
+
+ByteStreams documentation can be built with the docs script located in the scripts direcotry.
+@code 
+python scripts/docs.py
+@endcode
 */
