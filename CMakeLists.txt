@@ -44,17 +44,15 @@ if(UNIX AND NOT APPLE)
   include(GNUInstallDirs)
   install(TARGETS ByteStream DESTINATION "/usr/lib")
   install(FILES ${BYTESTREAM_HEADERS} DESTINATION "/usr/include/ByteStream")
-
-  include(InstallRequiredSystemLibraries)
-  set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
-  set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
-  set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
   
 elseif(WIN32)
 
 elseif(APPLE)
 #i dont have mac hardware :(
-
-include(CPack)
 endif()
 
+include(InstallRequiredSystemLibraries)
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+include(CPack)
