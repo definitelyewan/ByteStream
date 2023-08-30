@@ -7,12 +7,12 @@ option(BUILD_BENCHMARKS "build benchmarks" OFF)
 option(BUILD_DOCS "build documentation" OFF)
 
 set(BYTESTREAM_HEADERS
-  "${CMAKE_SOURCE_DIR}/include/byteDefines.h"
-  "${CMAKE_SOURCE_DIR}/include/byteTypes.h"
-  "${CMAKE_SOURCE_DIR}/include/byteUnicode.h"
-  "${CMAKE_SOURCE_DIR}/include/byteStream.h"
-  "${CMAKE_SOURCE_DIR}/include/byteEndian.h"
-  "${CMAKE_SOURCE_DIR}/include/byteInt.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/byteDefines.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/byteTypes.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/byteUnicode.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/byteStream.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/byteEndian.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/include/byteInt.h"
 )
 
 
@@ -20,11 +20,11 @@ set(BYTESTREAM_SRC
   "${CMAKE_CURRENT_SOURCE_DIR}/src/modules/byteUnicode.c"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/modules/byteEndian.c"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/byteStream.c"
-  "${CMAKE_SOURCE_DIR}/src/modules/byteInt.c"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/modules/byteInt.c"
 )
 
 add_library(ByteStream ${BYTESTREAM_HEADERS} ${BYTESTREAM_SRC})
-target_include_directories(ByteStream PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_SOURCE_DIR}/include")
+target_include_directories(ByteStream PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")
 set_target_properties(ByteStream PROPERTIES C_STANDARD 99)
 
 if(BUILD_TESTS)
