@@ -40,13 +40,21 @@ if(BUILD_DOCS)
 endif()
 
 #install on linux
+
+set(CPACK_NSIS_ENABLE_UNINSTALL_BEFORE_INSTALL ON)
+
 if(UNIX AND NOT APPLE)
   include(GNUInstallDirs)
-  install(TARGETS ByteStream DESTINATION "/usr/lib")
-  install(FILES ${BYTESTREAM_HEADERS} DESTINATION "/usr/include/ByteStream")
+  set(CPACK_PACKAGE_INSTALL_DIRECTORY "/usr")
+  install(TARGETS ByteStream DESTINATION lib)
+  install(FILES ${BYTESTREAM_HEADERS} DESTINATION "include/ByteStream")
   
 elseif(WIN32)
-
+  set(CPACK_PACKAGE_INSTALL_DIRECTORY "ByteStream")
+  set(CPACK_GENERATOR "NSIS")
+  set(CPACK_NSIS_PACKAGE_NAME "ByteStream")
+  install(TARGETS ByteStream DESTINATION lib)
+  install(FILES ${BYTESTREAM_HEADERS} DESTINATION "include/ByteStream")
 elseif(APPLE)
 #i dont have mac hardware :(
 endif()

@@ -2,7 +2,7 @@
 
 @mainpage
 
-ByteStream is a stream library entirely written in C with a specific emphasis on different text encodings such as different unicode standards and ASCII. It only requires the standard C library and works on both Linux and Windows while compiled with either GCC or Clang.
+ByteStream is a stream library entirely written in C with a specific emphasis on different text encodings such as different unicode standards and ASCII. It only requires the standard C library and works on both Linux and Windows while compiled with either GCC, Clang, or MVSC.
 
 The official repo for this library is located at https://github.com/definitelyewan/ByteStream
 
@@ -28,7 +28,7 @@ The ByteStream library provides:
 
 @section main-test Some Examples
 
-Creating a stream can be done in two different ways, either from a file or user supplied data. Bellow is an example
+Creating a stream can be done in two different ways, either from a file or user-supplied data. Below is an example
 of how you would create a stream using this library.
 
 @code
@@ -115,7 +115,7 @@ int main(int argc, char *argv[]){
 
 @endcode
 
-The bellow example will cover hot to write data to a stream.
+The below example will cover how to write data to a stream.
 
 @code
 
@@ -149,7 +149,7 @@ int main(int argc, char *argv[]){
 
 @endcode
 
-ByteStream adds support for other text encodings such as unicode, the bellow example will revolve around
+ByteStream adds support for other text encodings such as Unicode, the below example will revolve around
 reading and writing these kinds of values.
 
 @code
@@ -203,7 +203,7 @@ int main(int argc, char *argv[]){
 
 @endcode
 
-ByteStream adds support for reading both integers and Sync Safe integers, the bellow example will revolve around
+ByteStream adds support for reading both integers and Sync Safe integers, the below example will revolve around
 reading and writing these kinds of values.
 
 @code
@@ -240,7 +240,7 @@ Tests can be run on any operating system with support for the cmocka library.
 python scripts/test.py
 @endcode
 
-Benchmarks can be run on any linux or windows operating system exclusivly as the methods used for execution time and instruction counting are platform specific. In the future if I come across any apple hardware I will make sure to add support for MAC OS.
+Benchmarks can be run on any Linux or Windows operating system exclusively as the methods used for execution time and instruction counting are platform-specific. In the future, if I come across any Apple hardware I will make sure to add support for MAC OS.
 @code 
 python scripts/bench.py
 @endcode
@@ -250,12 +250,12 @@ This library can be built using the build script within the scripts directory an
 python scripts/build.py
 @endcode
 
-ByteStream can be installed using the install script provided with this copy however, at theis moment the script only has full support for linux. This script can be used on other operating systems but the compiled library will be located in build/ or build/Release. From this point on you are on your own and it is up to you to figure out where it should go.
+ByteStream can be installed using the install script provided with this copy however, at the moment the script only has full support for Linux and Windows. This script can be used on other operating systems but the compiled library will be located in build/ or build/Release. From this point on you are on your own and it is up to you to figure out where it should go.
 @code 
 python scripts/install.py
 @endcode
 
-ByteStreams documentation can be built with the docs script located in the scripts direcotry.
+ByteStreams documentation can be built with the docs script located in the script's directory.
 @code 
 python scripts/docs.py
 @endcode

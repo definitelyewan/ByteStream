@@ -1,5 +1,5 @@
 # ByteStream
-ByteStream is a stream library entirely written in C with a specific emphasis on different text encodings such as different unicode standards and ASCII. It only requires the standard C library and works on both Linux and Windows while compiled with either GCC or Clang.
+ByteStream is a stream library entirely written in C with a specific emphasis on different text encodings such as different unicode standards and ASCII. It only requires the standard C library and works on both Linux and Windows while compiled with either GCC, Clang, or MVSC.
 
 ByteStream Provides an easy way to initialize a stream from a file or directly by the caller.
 From this point, the caller can easily read and write to the stream from a supplied position or
@@ -18,4 +18,6 @@ done on x86 platforms such as Intel and AMD.
  - 100% test coverage
  - 100% benchmark coverage
 
-All documentation, tests, benchmarks, builds, and installers can be generated using the provided python3 scripts located in scripts/
+All documentation, tests, benchmarks, builds, and installers can be generated using the provided python3 scripts located in scripts/ . Alternatively, downloads are located in the releases tab :)
+
+All testing and development was done on Windows 10 and Fedora 38
