@@ -5,6 +5,7 @@ option(BUILD_SHARED_LIBS "building a shared lib" OFF)
 option(BUILD_TESTS "build tests" OFF)
 option(BUILD_BENCHMARKS "build benchmarks" OFF)
 option(BUILD_DOCS "build documentation" OFF)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 
 set(BYTESTREAM_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/include/byteDefines.h"
