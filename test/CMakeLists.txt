@@ -14,11 +14,11 @@ set(TEST_BYTEENDIAN "${CMAKE_CURRENT_SOURCE_DIR}/byteEndianFunctions.c")
 set(TEST_BYTEINT "${CMAKE_CURRENT_SOURCE_DIR}/byteIntFunctions.c")
 
 set(TEST_ASSETS
-  "${CMAKE_SOURCE_DIR}/assets/latin1.txt"
-  "${CMAKE_SOURCE_DIR}/assets/utf8-complex.txt"
-  "${CMAKE_SOURCE_DIR}/assets/utf8-simple.txt"
-  "${CMAKE_SOURCE_DIR}/assets/utf16.txt"
-  "${CMAKE_SOURCE_DIR}/assets/ascii.txt"
+  "${CMAKE_CURRENT_SOURCE_DIR}/assets/latin1.txt"
+  "${CMAKE_CURRENT_SOURCE_DIR}/assets/utf8-complex.txt"
+  "${CMAKE_CURRENT_SOURCE_DIR}/assets/utf8-simple.txt"
+  "$CMAKE_CURRENT_SOURCE_DIR/assets/utf16.txt"
+  "$CMAKE_CURRENT_SOURCE_DIR/assets/ascii.txt"
 )
 
 add_executable(unicode_test ${TEST_BYTEUNICODE})
