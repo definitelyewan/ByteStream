@@ -6,11 +6,11 @@ set(BENCH_BYTEENDIAN "${CMAKE_CURRENT_SOURCE_DIR}/byteEndianBench.c")
 set(BENCH_BYTEINT "${CMAKE_CURRENT_SOURCE_DIR}/byteIntBench.c")
 
 set(BENCH_ASSETS
-  "${CMAKE_CURRENT_SOURCE_DIR}/assets/latin1.txt"
-  "${CMAKE_CURRENT_SOURCE_DIR}/assets/utf8-complex.txt"
-  "${CMAKE_CURRENT_SOURCE_DIR}/assets/utf8-simple.txt"
-  "${CMAKE_CURRENT_SOURCE_DIR}/assets/utf16.txt"
-  "${CMAKE_CURRENT_SOURCE_DIR}/assets/ascii.txt"
+  "${CMAKE_SOURCE_DIR}/assets/latin1.txt"
+  "${CMAKE_SOURCE_DIR}/assets/utf8-complex.txt"
+  "${CMAKE_SOURCE_DIR}/assets/utf8-simple.txt"
+  "${CMAKE_SOURCE_DIR}/assets/utf16.txt"
+  "${CMAKE_SOURCE_DIR}/assets/ascii.txt"
 )
 
 add_executable(unicode_bench ${BENCH_BYTEUNICODE})

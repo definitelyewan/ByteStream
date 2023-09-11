@@ -20,4 +20,4 @@ done on x86 platforms such as Intel and AMD.
 
 All documentation, tests, benchmarks, builds, and installers can be generated using the provided python3 scripts located in scripts/ . Alternatively, downloads are located in the releases tab :)
 
-All testing and development was done on Windows 10 and Fedora 38
+All testing and development was done on Windows 10, Fedora 38, and Debian 12
