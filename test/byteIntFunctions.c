@@ -12,14 +12,14 @@
 static void btoi_convertTo3_Setup(void **state){
     (void) state; /* unused */
 
-    int i = btoi("\0\0\0\x03",4);
+    int i = btoi((unsigned char *)"\0\0\0\x03",4);
     assert_int_equal(3,i);
 }
 
 static void btoi_convertToFF_Setup(void **state){
     (void) state; /* unused */
 
-    int i = btoi("\xff",1);
+    int i = btoi((unsigned char *)"\xff",1);
     assert_int_equal(255,i);
 }
 
