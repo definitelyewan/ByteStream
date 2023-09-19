@@ -743,7 +743,7 @@ static void byteStreamReturnInt_4bytes_Setup(void **state){
     (void) state; //unused
 
     ByteStream *stream = byteStreamCreate(NULL, 10);
-    byteStreamWrite(stream, "\0\0\x01\xa4",4);
+    byteStreamWrite(stream, (unsigned char *)"\0\0\x01\xa4",4);
     byteStreamSeek(stream, 0, SEEK_SET);
     int d = byteStreamReturnInt(stream);
     assert_int_equal(d,420);
@@ -754,7 +754,7 @@ static void byteStreamReturnInt_smallStream_Setup(void **state){
     (void) state; //unused
 
     ByteStream *stream = byteStreamCreate(NULL, 2);
-    byteStreamWrite(stream, "\x01\xa4",2);
+    byteStreamWrite(stream, (unsigned char *)"\x01\xa4",2);
     byteStreamSeek(stream, 0, SEEK_SET);
     int d = byteStreamReturnInt(stream);
     assert_int_equal(d,420);
@@ -770,7 +770,7 @@ static void byteStreamReturnInt_Fail_Setup(void **state){
 static void byteStreamReturnSyncInt_4bytes_Setup(void **state){
     (void) state; //unused 9992
     ByteStream *stream = byteStreamCreate(NULL, 10);
-    byteStreamWrite(stream, "\0\0\x27\x08", 4);
+    byteStreamWrite(stream, (unsigned char *)"\0\0\x27\x08", 4);
     byteStreamSeek(stream, 0, SEEK_SET);
     int d = byteStreamReturnSyncInt(stream);
     assert_int_equal(d,5000);
@@ -780,7 +780,7 @@ static void byteStreamReturnSyncInt_4bytes_Setup(void **state){
 static void byteStreamReturnSyncInt_smallStream_Setup(void **state){
     (void) state; //unused
     ByteStream *stream = byteStreamCreate(NULL, 2);
-    byteStreamWrite(stream, "\x27\x08", 2);
+    byteStreamWrite(stream, (unsigned char *)"\x27\x08", 2);
     byteStreamSeek(stream, 0, SEEK_SET);
     int d = byteStreamReturnSyncInt(stream);
     assert_int_equal(d,5000);
