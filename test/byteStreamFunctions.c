@@ -843,6 +843,86 @@ static void byteStreamTell_Fail_Setup(void **state){
     assert_int_equal(byteStreamTell(NULL),EOF);
 }
 
+static void byteStreamReadBit_readFirstBit_Setup(void **state){
+    (void) state; //unused
+    ByteStream *stream = byteStreamCreate(NULL,2);
+    
+    unsigned char bits = 0b10000010;
+    byteStreamWrite(stream, &bits, 1);
+    byteStreamRewind(stream);
+
+    assert_int_equal(0, byteStreamReadBit(stream, 0));
+    assert_int_equal(1, byteStreamReadBit(stream, 1));
+    assert_int_equal(0, byteStreamReadBit(stream, 2));
+    assert_int_equal(0, byteStreamReadBit(stream, 3));
+    assert_int_equal(0, byteStreamReadBit(stream, 4));
+    assert_int_equal(0, byteStreamReadBit(stream, 5));
+    assert_int_equal(0, byteStreamReadBit(stream, 6));
+    assert_int_equal(1, byteStreamReadBit(stream, 7));
+}
+
+static void byteStreamReadBit_ReadIntoSecondByte_Setup(void **state){
+    (void) state; //unused
+    ByteStream *stream = byteStreamCreate(NULL,2);
+    
+    unsigned char bits = 0b10000010;
+    byteStreamWrite(stream, &bits, 1);
+
+    bits = 0b00011000;
+    byteStreamWrite(stream, &bits, 1);
+    byteStreamRewind(stream);
+
+    assert_int_equal(byteStreamReadBit(stream, 15), 0);
+}
+
+static void byteStreamReadBit_readToFar_Setup(void **state){
+    (void) state; //unused
+    ByteStream *stream = byteStreamCreate(NULL,2);
+    
+    unsigned char bits = 0b10000010;
+    byteStreamWrite(stream, &bits, 1);
+
+    bits = 0b00011000;
+    byteStreamWrite(stream, &bits, 1);
+    byteStreamRewind(stream);
+
+    assert_int_equal(byteStreamReadBit(stream, 100), -1);
+}
+
+static void byteStreamWriteBit_setAllBits_Setup(void **state){
+    (void) state; //unused
+    ByteStream *stream = byteStreamCreate(NULL,2);
+    
+    unsigned char bits = 0b10000010;
+    byteStreamWrite(stream, &bits, 1);
+
+    bits = 0b00011000;
+    byteStreamWrite(stream, &bits, 1);
+    byteStreamRewind(stream);
+
+    for(int i = 0; i < 16; i++){
+        assert_true(byteStreamWriteBit(stream, 1, i));
+    }
+
+    for(int i = 0; i < 16; i++){
+        assert_int_equal(byteStreamReadBit(stream, i), 1);
+    }
+}
+
+static void byteStreamWriteBit_ReadOutOfRange_Setup(void **state){
+    (void) state; //unused
+    ByteStream *stream = byteStreamCreate(NULL,2);
+    
+    unsigned char bits = 0b10000010;
+    byteStreamWrite(stream, &bits, 1);
+
+    bits = 0b00011000;
+    byteStreamWrite(stream, &bits, 1);
+    byteStreamRewind(stream);
+
+    assert_false(byteStreamWriteBit(stream, 1, 99));
+}
+
 int main(){
     
     const struct CMUnitTest tests[] = {
@@ -896,6 +976,16 @@ int main(){
         cmocka_unit_test(byteStreamWriteAtPosition_Err_Setup),
         cmocka_unit_test(byteStreamWriteAtPosition_Start_Setup),
         cmocka_unit_test(byteStreamWriteAtPosition_Mid_Setup),
+        
+        //byteStreamReadBit
+        cmocka_unit_test(byteStreamReadBit_readFirstBit_Setup),
+        cmocka_unit_test(byteStreamReadBit_ReadIntoSecondByte_Setup),
+        cmocka_unit_test(byteStreamReadBit_readToFar_Setup),
+
+        //byteStreamWriteBit
+        cmocka_unit_test(byteStreamWriteBit_setAllBits_Setup),
+        cmocka_unit_test(byteStreamWriteBit_ReadOutOfRange_Setup),
+
         //byteStreamReturnAscii
         //same function is called for:
         // - byteStreamReturnLatin1

@@ -41,9 +41,9 @@ ByteStream *byteStreamFromFile(const char *fileName){
         return NULL;
     }
 
-    unsigned char *tmp = malloc(sz);
+    uint8_t *tmp = malloc(sz);
 
-    if(!(fread(tmp, sz, sizeof(unsigned char), fp))){
+    if(!(fread(tmp, sz, sizeof(uint8_t), fp))){
         free(tmp);
         fclose(fp);
         return NULL;
@@ -64,14 +64,14 @@ ByteStream *byteStreamFromFile(const char *fileName){
  * @param n
  * @return ByteStream* 
  */
-ByteStream *byteStreamCreate(unsigned char *buffer, size_t n){
+ByteStream *byteStreamCreate(uint8_t *buffer, size_t n){
     
     if(!n){
         return NULL;
     }
 
     ByteStream *stream = malloc(sizeof(ByteStream));
-    unsigned char *tmp = malloc(n + BYTE_PADDING);
+    uint8_t *tmp = malloc(n + BYTE_PADDING);
     memset(tmp, 0, n + BYTE_PADDING);
     
     if(buffer){
@@ -98,7 +98,7 @@ void byteStreamResize(ByteStream *stream, size_t n){
         return;
     }
 
-    unsigned char *tmp = malloc(n + BYTE_PADDING);
+    uint8_t *tmp = malloc(n + BYTE_PADDING);
     memset(tmp, 0, n + BYTE_PADDING);
 
     if(n > stream->bufferSize){
@@ -170,7 +170,7 @@ void byteStreamDestroy(ByteStream *toDelete){
  * @return true 
  * @return false 
  */
-bool byteStreamRead(ByteStream *stream, unsigned char *dest, size_t n){
+bool byteStreamRead(ByteStream *stream, uint8_t *dest, size_t n){
 
     if(stream == NULL || n == 0){
         return false;
@@ -252,9 +252,9 @@ bool byteStreamSeek(ByteStream *stream, size_t dest, const int seekOption){
  * @details If the delimiter is not found null will be returned.
  * @param stream 
  * @param delimiter 
- * @return unsigned char* 
+ * @return uint8_t* 
  */
-unsigned char *byteStreamReadUntil(ByteStream *stream, unsigned char delimiter){
+uint8_t *byteStreamReadUntil(ByteStream *stream, uint8_t delimiter){
 
     if(stream == NULL){
         return NULL;
@@ -268,7 +268,7 @@ unsigned char *byteStreamReadUntil(ByteStream *stream, unsigned char delimiter){
 
         //create return
         if(stream->buffer[i] == delimiter){
-            unsigned char *ret = malloc(j + BYTE_PADDING);
+            uint8_t *ret = malloc(j + BYTE_PADDING);
             
             memset(ret, 0, j + BYTE_PADDING);
             byteStreamRead(stream, ret, j);
@@ -289,7 +289,7 @@ unsigned char *byteStreamReadUntil(ByteStream *stream, unsigned char delimiter){
  * @param replace 
  * @param replaceSize 
  */
-void byteStreamSearchAndReplace(ByteStream *stream, unsigned char *pattern, size_t patternSize, unsigned char *replace, size_t replaceSize){
+void byteStreamSearchAndReplace(ByteStream *stream, uint8_t *pattern, size_t patternSize, uint8_t *replace, size_t replaceSize){
 
     if(stream == NULL || pattern == NULL || patternSize == 0){
         return;
@@ -337,9 +337,9 @@ void byteStreamSearchAndReplace(ByteStream *stream, unsigned char *pattern, size
  * @brief Returns a pointer at the current position in the stream.
  * @details If the cursor is at the end of the stream this function will return null.
  * @param stream 
- * @return unsigned char* 
+ * @return uint8_t* 
  */
-unsigned char *byteStreamCursor(ByteStream *stream){
+uint8_t *byteStreamCursor(ByteStream *stream){
     
     if(stream == NULL){
         return NULL;
@@ -365,7 +365,7 @@ int byteStreamGetCh(ByteStream *stream){
         return EOF;
     }
 
-    unsigned char *c = byteStreamCursor(stream);
+    uint8_t *c = byteStreamCursor(stream);
     
     //control output
     return c == NULL ? EOF: c[0];
@@ -381,7 +381,7 @@ int byteStreamGetCh(ByteStream *stream){
  * @return true 
  * @return false 
  */
-bool byteStreamWrite(ByteStream *stream, unsigned char *src, size_t n){
+bool byteStreamWrite(ByteStream *stream, uint8_t *src, size_t n){
 
     if(stream == NULL || src == NULL || n > stream->bufferSize || n  == 0){
         return false;
@@ -412,7 +412,7 @@ bool byteStreamWrite(ByteStream *stream, unsigned char *src, size_t n){
  * @return true 
  * @return false 
  */
-bool byteStreamWriteAtPosition(ByteStream *stream, unsigned char *src, size_t n, size_t pos){
+bool byteStreamWriteAtPosition(ByteStream *stream, uint8_t *src, size_t n, size_t pos){
 
     if(stream == NULL || pos > stream->bufferSize || src == NULL){
         return false;
@@ -431,6 +431,76 @@ bool byteStreamWriteAtPosition(ByteStream *stream, unsigned char *src, size_t n,
 }
 
 /**
+ * @brief reads the kth bit from a stream and does not move the cursor
+ * @details this function will return -1 if it fails otherwise, it returns the current bit.
+ * @param stream 
+ * @param k 
+ * @return int 
+ */
+int byteStreamReadBit(ByteStream *stream, unsigned int k){
+
+    if(stream == NULL){
+        return -1;
+    }
+
+    if(k > (stream->bufferSize - stream->cursor) * 8){
+        return -1;
+    }
+
+
+    size_t pos = 0;
+
+    for(size_t i = stream->cursor; i < stream->bufferSize; i++){
+        for(size_t j = 0; j < 8; j++){
+            
+            if(pos == k){
+                return readBit(stream->buffer[i], j);
+            }
+
+            pos++;
+        }
+    }
+
+    return -1;
+}
+
+/**
+ * @brief Writes a bit into the stream at index k
+ * @details if this function is successful it will return true otherwise, false
+ * @param stream 
+ * @param bit 
+ * @param k 
+ * @return true 
+ * @return false 
+ */
+bool byteStreamWriteBit(ByteStream *stream, bool bit, unsigned int k){
+
+    if(stream == NULL){
+        return false;
+    }
+
+    if(k > (stream->bufferSize - stream->cursor) * 8){
+        return false;
+    }
+
+    size_t pos = 0;
+
+    for(size_t i = stream->cursor; i < stream->bufferSize; i++){
+        for(size_t j = 0; j < 8; j++){
+            
+            if(pos == k){
+                stream->buffer[i] = setBit(stream->buffer[i], j, bit);
+                return true;
+            }
+
+            pos++;
+        }
+    }
+
+    return false;
+}
+
+/**
  * @brief Reads and returns the first ascii string in the current stream and provides its length.
  * @details This function is not strict and only looks for the first occurance of a 0 byte meaning
  * it can be used with other sequences. If this function fails it will return null otherise some
@@ -438,9 +508,9 @@ bool byteStreamWriteAtPosition(ByteStream *stream, unsigned char *src, size_t n,
  * @details this function 
  * @param stream 
  * @param outLen 
- * @return unsigned char* 
+ * @return uint8_t* 
  */
-unsigned char *byteStreamReturnAscii(ByteStream *stream, size_t *outLen){
+uint8_t *byteStreamReturnAscii(ByteStream *stream, size_t *outLen){
 
     if(stream == NULL){
         *outLen = 0;
@@ -451,7 +521,7 @@ unsigned char *byteStreamReturnAscii(ByteStream *stream, size_t *outLen){
 
     if(len){
         len++;
-        unsigned char *ret = calloc(sizeof(unsigned char), len + BYTE_PADDING);
+        uint8_t *ret = calloc(sizeof(uint8_t), len + BYTE_PADDING);
         byteStreamRead(stream, ret, len);
         *outLen = len;
         return ret;   
@@ -469,9 +539,9 @@ unsigned char *byteStreamReturnAscii(ByteStream *stream, size_t *outLen){
  * form of null terminated data will be returned.
  * @param stream 
  * @param outLen 
- * @return unsigned char* 
+ * @return uint8_t* 
  */
-unsigned char *byteStreamReturnLatin1(ByteStream *stream, size_t *outLen){
+uint8_t *byteStreamReturnLatin1(ByteStream *stream, size_t *outLen){
     //just extended ascii and its terminated the same way
     return byteStreamReturnAscii(stream, outLen);
 }
@@ -483,9 +553,9 @@ unsigned char *byteStreamReturnLatin1(ByteStream *stream, size_t *outLen){
  * form of null terminated data will be returned.
  * @param stream 
  * @param outLen 
- * @return unsigned char* 
+ * @return uint8_t* 
  */
-unsigned char *byteStreamReturnUtf8(ByteStream *stream, size_t *outLen){
+uint8_t *byteStreamReturnUtf8(ByteStream *stream, size_t *outLen){
     //terminated the same way
     return byteStreamReturnAscii(stream, outLen);
 }
@@ -497,9 +567,9 @@ unsigned char *byteStreamReturnUtf8(ByteStream *stream, size_t *outLen){
  * form of null terminated data will be returned.
  * @param stream 
  * @param outLen 
- * @return unsigned char* 
+ * @return uint8_t* 
  */
-unsigned char *byteStreamReturnUtf16(ByteStream *stream, size_t *outLen){
+uint8_t *byteStreamReturnUtf16(ByteStream *stream, size_t *outLen){
 
     if(stream == NULL){
         *outLen = 0;
@@ -510,7 +580,7 @@ unsigned char *byteStreamReturnUtf16(ByteStream *stream, size_t *outLen){
     size_t len = byteStrlen(BYTE_UTF16BE, byteStreamCursor(stream));
 
     if(len){
-        unsigned char *ret = calloc(sizeof(unsigned char), len + BYTE_PADDING);
+        uint8_t *ret = calloc(sizeof(uint8_t), len + BYTE_PADDING);
         byteStreamRead(stream, ret, len + 2);   
         *outLen = len;
         return ret;
@@ -535,7 +605,7 @@ int byteStreamReturnInt(ByteStream *stream){
 
     //an int is 4 bytes but....
     int is = 4;
-    unsigned char buff[4] = {0,0,0,0};
+    uint8_t buff[4] = {0,0,0,0};
 
     for(int i = 0; i < 4; i++){
         if(stream->cursor + i == stream->bufferSize){
@@ -552,6 +622,12 @@ int byteStreamReturnInt(ByteStream *stream){
     return btoi(buff,is);
 }
 
+/**
+ * @brief returns a decoded sync safe integer from the stream
+ * 
+ * @param stream 
+ * @return unsigned int 
+ */
 unsigned int byteStreamReturnSyncInt(ByteStream *stream){
     return byteSyncintDecode(byteStreamReturnInt(stream));
 }

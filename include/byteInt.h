@@ -15,8 +15,14 @@
 extern "C"{
 #endif
 
+#include <stdint.h>
+#include <stdbool.h>
+
 int btoi(unsigned char *bytes, int byteNum);
 char *itob(int i);
+
+uint8_t setBit(uint8_t n, unsigned int k, bool v);
+int readBit(uint8_t n, unsigned int k);
 
 unsigned int byteSyncintDecode(unsigned int value);
 unsigned int byteSyncintEncode(unsigned int value);

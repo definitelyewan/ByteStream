@@ -16,6 +16,7 @@ extern "C"{
 #endif
 
 #include <stdbool.h>
+#include <stdint.h>
 #include "byteDefines.h"
 
 /**
@@ -24,7 +25,7 @@ extern "C"{
  */
 typedef struct _ByteStream{
     //!A block of memory
-    unsigned char *buffer;
+    uint8_t *buffer;
     
     //!The size of the buffer
     size_t bufferSize; 

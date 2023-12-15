@@ -50,6 +50,65 @@ static void itob_convertToINTMAX_Setup(void **state){
     free(b);
 }
 
+static void setBit_allBits_setup(void **state){
+    (void) state; /* unused */
+
+    uint8_t bits = 0;
+
+    for(int i = 0; i < 8; i++){
+        bits = setBit(bits, i, 1);
+    }
+
+    assert_int_equal(bits,255);
+}
+
+static void setBit_unsetAllBits_setup(void **state){
+    (void) state; /* unused */
+
+    uint8_t bits = 255;
+
+    for(int i = 0; i < 8; i++){
+        bits = setBit(bits, i, 0);
+    }
+
+    assert_int_equal(bits,0);
+}
+
+static void setBit_setOutOfRange_setup(void **state){
+    (void) state; /* unused */
+
+    uint8_t bits = 0;
+    bits = setBit(bits, 100, 1);
+    assert_int_equal(bits,0);
+}
+
+static void readBit_readall_setup(void **state){
+    (void) state; /* unused */
+
+    uint8_t bits = 0;
+    
+    for(int i = 0; i < 8; i++){
+        int v = readBit(bits, i);
+        assert_int_equal(v, 0);
+    }
+
+    bits = 255;
+    
+    for(int i = 0; i < 8; i++){
+        int v = readBit(bits, i);
+        assert_int_equal(v, 1);
+    }
+}
+
+static void readBit_outOfRange_setup(void **state){
+    (void) state; /* unused */
+
+    uint8_t bits = 255;
+    
+    int v = readBit(bits, 100);
+    assert_int_equal(v,-1);
+}
+
 static void byteSyncintDecode_singleByteVal_Setup(void **state){
     (void) state; /* unused */
     assert_int_equal(10,byteSyncintDecode(10));
@@ -90,6 +149,16 @@ int main(){
         cmocka_unit_test(itob_convertTo0x03_Setup),
         cmocka_unit_test(itob_convertTo0xFF_Setup),
         cmocka_unit_test(itob_convertToINTMAX_Setup),
+
+        //setBit
+        cmocka_unit_test(setBit_allBits_setup),
+        cmocka_unit_test(setBit_unsetAllBits_setup),
+        cmocka_unit_test(setBit_setOutOfRange_setup),
+
+        //readBit
+        cmocka_unit_test(readBit_readall_setup),
+        cmocka_unit_test(readBit_outOfRange_setup),
+
         //byteSyncintDecode
         cmocka_unit_test(byteSyncintDecode_singleByteVal_Setup),
         cmocka_unit_test(byteSyncintDecode_doubleByteVal_Setup),

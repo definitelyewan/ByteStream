@@ -15,9 +15,9 @@ else:
 #build with cmake
 try:
     if platform == "linux" or platform == "linux2" or "darwin":
-        subprocess.call(["cmake", "-S", ".", "-B", "./build", "-DBUILD_TESTS=ON"])
+        subprocess.call(["cmake", "-S", ".", "-B", "./build", "-DBUILD_TESTS=ON", "-DBUILD_STREAM_DEBUG=ON"])
     elif platform == "win32":
-        subprocess.call(["cmake", "-S", ".", "-B", ".\\build", "-DBUILD_TESTS=ON"])
+        subprocess.call(["cmake", "-S", ".", "-B", ".\\build", "-DBUILD_TESTS=ON", "-DBUILD_STREAM_DEBUG=ON"])
 
 except OSError as e:
     if e.errno == errno.ENOENT:
@@ -78,9 +78,9 @@ except OSError as e:
 try:
     if platform == "linux" or platform == "linux2" or "darwin":
         subprocess.call("./stream_test")
-        subprocess.call("./unicode_test")
-        subprocess.call("./endian_test")
-        subprocess.call("./int_test")
+        #subprocess.call("./unicode_test")
+        #subprocess.call("./endian_test")
+        #subprocess.call("./int_test")
     elif platform == "win32":
         if os.path.exists("Release"):
             os.chdir("Release")

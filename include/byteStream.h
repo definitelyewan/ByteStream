@@ -15,30 +15,34 @@
 extern "C"{
 #endif
 
+#include <stddef.h>
 #include "byteTypes.h"
 
 //mem functions
 ByteStream *byteStreamFromFile(const char *fileName);
-ByteStream *byteStreamCreate(unsigned char *buffer, size_t bufferSize);
+ByteStream *byteStreamCreate(uint8_t *buffer, size_t bufferSize);
 void byteStreamResize(ByteStream *stream, size_t n);
 void byteStreamFree(ByteStream *toDelete);
 void byteStreamDestroy(ByteStream *toDelete);
 
 //move
-bool byteStreamRead(ByteStream *stream, unsigned char *dest, size_t size);
+bool byteStreamRead(ByteStream *stream, uint8_t *dest, size_t size);
 bool byteStreamSeek(ByteStream *stream, size_t dest, const int seekOption);
-unsigned char *byteStreamReadUntil(ByteStream *stream, unsigned char delimiter);
-void byteStreamSearchAndReplace(ByteStream *stream, unsigned char *pattern, size_t patternSize, unsigned char *replace, size_t replaceSize); //named by mina
-unsigned char *byteStreamCursor(ByteStream *stream);
+uint8_t *byteStreamReadUntil(ByteStream *stream, uint8_t delimiter);
+void byteStreamSearchAndReplace(ByteStream *stream, uint8_t *pattern, size_t patternSize, uint8_t *replace, size_t replaceSize); //named by mina
+uint8_t *byteStreamCursor(ByteStream *stream);
 int byteStreamGetCh(ByteStream *stream);
-bool byteStreamWrite(ByteStream *stream, unsigned char *src, size_t n);
-bool byteStreamWriteAtPosition(ByteStream *stream, unsigned char *src, size_t n, size_t pos);
+bool byteStreamWrite(ByteStream *stream, uint8_t *src, size_t n);
+bool byteStreamWriteAtPosition(ByteStream *stream, uint8_t *src, size_t n, size_t pos);
+
+int byteStreamReadBit(ByteStream *stream, unsigned int k);
+bool byteStreamWriteBit(ByteStream *stream, bool bit, unsigned int k);
 
 //returns
-unsigned char *byteStreamReturnAscii(ByteStream *stream, size_t *outLen);
-unsigned char *byteStreamReturnLatin1(ByteStream *stream, size_t *outLen);
-unsigned char *byteStreamReturnUtf8(ByteStream *stream, size_t *outLen);
-unsigned char *byteStreamReturnUtf16(ByteStream *stream, size_t *outLen);
+uint8_t *byteStreamReturnAscii(ByteStream *stream, size_t *outLen);
+uint8_t *byteStreamReturnLatin1(ByteStream *stream, size_t *outLen);
+uint8_t *byteStreamReturnUtf8(ByteStream *stream, size_t *outLen);
+uint8_t *byteStreamReturnUtf16(ByteStream *stream, size_t *outLen);
 int byteStreamReturnInt(ByteStream *stream);
 unsigned int byteStreamReturnSyncInt(ByteStream *stream);
 

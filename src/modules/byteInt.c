@@ -11,6 +11,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include "byteEndian.h"
 #include "byteInt.h"
 
@@ -59,6 +60,40 @@ char *itob(int i){
     }
 
     return ret;
+}
+
+/**
+ * @brief set the kth bit of n to value v
+ * 
+ * @param n 
+ * @param k 
+ * @param v 
+ * @return uint8_t 
+ */
+uint8_t setBit(uint8_t n, unsigned int k, bool v){
+
+    if(k > 7){// 7 is MSB or LSB
+        return n;
+    }
+
+    //mask out bit
+    n = n & ~(1 << k);
+
+    //if v is set bit otherwise, just use the mask
+    return (v) ? (n | (1 << k)) : n;
+}
+
+/**
+ * @brief read the kth bit of n
+ * 
+ * @param n 
+ * @param k 
+ * @return unsigned int 
+ */
+int readBit(uint8_t n, unsigned int k){
+  //7 is MSB or LSB. 
+  //k > 7 is not possible for a uint8
+  return (k > 7) ? -1 : (n >> k) & 1;
 }
 
 /**

@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(ByteStream VERSION 1.0.0.0)
+project(ByteStream VERSION 1.1.0.0)
 
 option(BUILD_SHARED_LIBS "building a shared lib" OFF)
 option(BUILD_TESTS "build tests" OFF)
 option(BUILD_BENCHMARKS "build benchmarks" OFF)
 option(BUILD_DOCS "build documentation" OFF)
-set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+option(BUILD_STREAM_DEBUG "compiles with debug symbols" ON)
 
 set(BYTESTREAM_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/include/byteDefines.h"
@@ -23,6 +23,17 @@ set(BYTESTREAM_SRC
   "${CMAKE_CURRENT_SOURCE_DIR}/src/byteStream.c"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/modules/byteInt.c"
 )
+
+if(BUILD_STREAM_DEBUG)
+  if(MSVC)
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    add_compile_options("/W4")
+  else()
+    add_compile_options("-Wall")
+    add_compile_options("-g")
+  endif()
+endif()
+
 
 add_library(ByteStream ${BYTESTREAM_HEADERS} ${BYTESTREAM_SRC})
 target_include_directories(ByteStream PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/include")

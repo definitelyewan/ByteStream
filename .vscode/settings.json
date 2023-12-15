@@ -20,6 +20,7 @@
         "perf_event.h": "c",
         "stddef.h": "c",
         "windows.h": "c",
-        "intrin.h": "c"
+        "intrin.h": "c",
+        "bytedefines.h": "c"
     }
 }
