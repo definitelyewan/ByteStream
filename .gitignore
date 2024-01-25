@@ -5,3 +5,4 @@ main
 *.a
 output.txt
 build/
+.DS_STORE
