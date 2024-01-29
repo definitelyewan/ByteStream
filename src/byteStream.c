@@ -500,6 +500,13 @@ bool byteStreamWriteBit(ByteStream *stream, bool bit, unsigned int k){
     return false;
 }
 
+/**
+ * @brief Deletes a character at the current index of the stream
+ * @details if this function fails it will return false otherwise, true
+ * @param stream 
+ * @return true 
+ * @return false 
+ */
 bool byteStreamDeleteCh(ByteStream *stream){
 
     if(!stream){

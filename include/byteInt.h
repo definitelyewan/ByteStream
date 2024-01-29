@@ -8,8 +8,8 @@
  * @copyright Copyright (c) 2023
  * 
  */
-#ifndef BYTE_ENDIAN
-#define BYTE_ENDIAN
+#ifndef BYTE_INT
+#define BYTE_INT
 
 #ifdef __cplusplus
 extern "C"{
@@ -24,8 +24,8 @@ char *itob(int i);
 uint8_t setBit(uint8_t n, unsigned int k, bool v);
 int readBit(uint8_t n, unsigned int k);
 
-unsigned int byteSyncintDecode(unsigned int value);
-unsigned int byteSyncintEncode(unsigned int value);
+uint64_t byteSyncintDecode(uint64_t value);
+uint64_t byteSyncintEncode(uint64_t value);
 
 #ifdef __cplusplus
 } //extern c end

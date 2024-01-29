@@ -97,40 +97,42 @@ int readBit(uint8_t n, unsigned int k){
 }
 
 /**
- * @brief Converts a 4 byte, 7 bit sync integer to its representation as a unsigned integer. 
+ * @brief Converts an integer up to 64 bits, 7 bit sync integer to its representation as a unsigned integer. 
  * @details A SafeSync integers byte format looks as follows 0xxxxxxx where x represents a bit.
  * @param value 
- * @return unsigned int 
+ * @return uint64_t 
  */
-unsigned int byteSyncintDecode(unsigned int value){
-
-    unsigned int result = 0x00;
-    unsigned int a = value & 0xFF;
-    unsigned int b = (value >> 8) & 0xFF;
-    unsigned int c = (value >> 16) & 0xFF;
-    unsigned int d = (value >> 24) & 0xFF;
+uint64_t byteSyncintDecode(uint64_t value){
+    uint64_t result = 0x00;
+    uint64_t a = value & 0xFF;
+    uint64_t b = (value >> 8) & 0xFF;
+    uint64_t c = (value >> 16) & 0xFF;
+    uint64_t d = (value >> 24) & 0xFF;
+    uint64_t e = (value >> 32) & 0xFF;
+    uint64_t f = (value >> 40) & 0xFF;
 
     result = result | a;
     result = result | (b << 7);
     result = result | (c << 14);
     result = result | (d << 21);
+    result = result | (e << 28);
+    result = result | (f << 35);
 
     return result;
-    
 }
 
 /**
  * @brief Converts an unsigned value into its representation as a byte, 7 bit sync integer.
  * @details A SafeSync integers byte format looks as follows 0xxxxxxx where x represents a bit.
  * @param value 
- * @return unsigned int 
+ * @return uint64_t 
  */
-unsigned int byteSyncintEncode(unsigned int value){
+uint64_t byteSyncintEncode(uint64_t value){
     
-    int out = 0x7F;
-    int mask = 0x7F;
+    uint64_t out = 0x7F;
+    uint64_t mask = 0x7F;
 
-    while(mask ^ 0x7FFFFFFF){
+    while(mask ^ 0x7FFFFFFFFFFFFFFF){
         out = value & ~mask;
         out <<= 1;
         out |= value & mask;
