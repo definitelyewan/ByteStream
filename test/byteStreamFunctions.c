@@ -841,6 +841,7 @@ static void byteStreamTell_Fail_Setup(void **state){
     (void) state; //unused
 
     assert_int_equal(byteStreamTell(NULL),EOF);
+    
 }
 
 static void byteStreamReadBit_readFirstBit_Setup(void **state){
@@ -859,6 +860,8 @@ static void byteStreamReadBit_readFirstBit_Setup(void **state){
     assert_int_equal(0, byteStreamReadBit(stream, 5));
     assert_int_equal(0, byteStreamReadBit(stream, 6));
     assert_int_equal(1, byteStreamReadBit(stream, 7));
+
+    byteStreamDestroy(stream);
 }
 
 static void byteStreamReadBit_ReadIntoSecondByte_Setup(void **state){
@@ -873,6 +876,8 @@ static void byteStreamReadBit_ReadIntoSecondByte_Setup(void **state){
     byteStreamRewind(stream);
 
     assert_int_equal(byteStreamReadBit(stream, 15), 0);
+
+    byteStreamDestroy(stream);
 }
 
 static void byteStreamReadBit_readToFar_Setup(void **state){
@@ -887,6 +892,8 @@ static void byteStreamReadBit_readToFar_Setup(void **state){
     byteStreamRewind(stream);
 
     assert_int_equal(byteStreamReadBit(stream, 100), -1);
+
+    byteStreamDestroy(stream);
 }
 
 static void byteStreamWriteBit_setAllBits_Setup(void **state){
@@ -907,6 +914,8 @@ static void byteStreamWriteBit_setAllBits_Setup(void **state){
     for(int i = 0; i < 16; i++){
         assert_int_equal(byteStreamReadBit(stream, i), 1);
     }
+
+    byteStreamDestroy(stream);
 }
 
 static void byteStreamWriteBit_ReadOutOfRange_Setup(void **state){
@@ -921,6 +930,20 @@ static void byteStreamWriteBit_ReadOutOfRange_Setup(void **state){
     byteStreamRewind(stream);
 
     assert_false(byteStreamWriteBit(stream, 1, 99));
+
+    byteStreamDestroy(stream);
+}
+
+static void byteStreamDeleteCh_deleteWholeStream_Setup(void **state){
+    (void) state; //unused
+    
+    ByteStream *stream = byteStreamCreate(NULL,10);
+    
+    for(int i = 0; i < 10; i++){
+        assert_true(byteStreamDeleteCh(stream));
+    }
+
+    byteStreamDestroy(stream);
 }
 
 int main(){
@@ -1015,6 +1038,9 @@ int main(){
         //byteStreamTell
         cmocka_unit_test(byteStreamTell_Normal_Setup),
         cmocka_unit_test(byteStreamTell_Fail_Setup),
+
+        // byteStreamDeleteCh
+        cmocka_unit_test(byteStreamDeleteCh_deleteWholeStream_Setup)
 
     };
 

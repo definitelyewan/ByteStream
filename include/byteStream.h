@@ -38,6 +38,8 @@ bool byteStreamWriteAtPosition(ByteStream *stream, uint8_t *src, size_t n, size_
 int byteStreamReadBit(ByteStream *stream, unsigned int k);
 bool byteStreamWriteBit(ByteStream *stream, bool bit, unsigned int k);
 
+bool byteStreamDeleteCh(ByteStream *stream);
+
 //returns
 uint8_t *byteStreamReturnAscii(ByteStream *stream, size_t *outLen);
 uint8_t *byteStreamReturnLatin1(ByteStream *stream, size_t *outLen);

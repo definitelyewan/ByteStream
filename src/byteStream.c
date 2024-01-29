@@ -500,6 +500,29 @@ bool byteStreamWriteBit(ByteStream *stream, bool bit, unsigned int k){
     return false;
 }
 
+bool byteStreamDeleteCh(ByteStream *stream){
+
+    if(!stream){
+        return false;
+    }
+
+    size_t rmIndex = stream->cursor;
+    size_t newSize = stream->bufferSize - 1;
+
+    if(rmIndex >= stream->bufferSize){
+        return false;
+    }
+
+    for(size_t i = rmIndex; i < stream->bufferSize - 1; i++){
+        stream->buffer[i] = stream->buffer[i + 1];
+    }
+
+    stream->bufferSize = newSize;
+    stream->buffer = realloc(stream->buffer, newSize + BYTE_PADDING);
+
+    return true;
+}
+
 /**
  * @brief Reads and returns the first ascii string in the current stream and provides its length.
  * @details This function is not strict and only looks for the first occurance of a 0 byte meaning

@@ -1,100 +1,104 @@
-import os
-from sys import platform
-import subprocess
-import errno
-import shutil
+from common.buildHelpers import *
+from common.InformUser import *
 
-#mk build
-print("Creating build dir")
-if not os.path.exists("build"):
-    os.mkdir("build")
-else:
-    shutil.rmtree("build")
-    os.mkdir("build")
+update = Inform(1)
 
-#build with cmake
-try:
-    if platform == "linux" or platform == "linux2" or "darwin":
-        subprocess.call(["cmake", "-S", ".", "-B", "./build", "-DBUILD_TESTS=ON", "-DBUILD_STREAM_DEBUG=ON"])
-    elif platform == "win32":
-        subprocess.call(["cmake", "-S", ".", "-B", ".\\build", "-DBUILD_TESTS=ON", "-DBUILD_STREAM_DEBUG=ON"])
+# mk build
+update.message("Creating build dir ..")
+replace_folder("build")
 
-except OSError as e:
-    if e.errno == errno.ENOENT:
-        #program was not found
-        print("cmake was not found or not installed")
-        quit()
-    else:
-        #program output
-        raise
+# build with cmake
+update.message("Running Cmake")
+cmake_build(".", "build", ["-DBUILD_TESTS=ON", "-DBUILD_SHARED_LIBS=ON","-DBUILD_STREAM_DEBUG=ON"])
 
-
-#build lib
+# move to build
+update.message("Moving to build dir")
 if os.path.exists("build"):
     os.chdir("build")
 else:
     quit()
 
-try:
-    if platform == "linux" or platform == "linux2" or platform == "darwin":
-        subprocess.call("make")
-    elif platform == "win32":
-        subprocess.call(["MSBuild.exe","ByteStream.vcxproj"])
+# compile the code
+update.message("Compiling libraries")
+compile_code("ByteStream")
 
-except OSError as e:
-    if e.errno == errno.ENOENT:
-        #program was not found
-        print("failed to build benchmarks either make or MSBuild was not found in PATH or it was not installed")
-        quit()
-    else:
-        #program output
-        raise
-
-#build tests
+# move to tests
+update.message("Moving to tests")
 if os.path.exists("test"):
     os.chdir("test")
 else:
     quit()
 
+# compile code
+update.message("Compiling byteEndian_test program")
+#compile_code("endian_test")
+
+update.message("Compiling int_test program")
+#compile_code("int_test")
+
+update.message("Compiling unicode_test program")
+#compile_code("unicode_test")
+
+update.message("Compiling stream_test program")
+compile_code("stream_test")
+
+
+
+# call test execs
 try:
-    if platform == "linux" or platform == "linux2" or platform == "darwin":
-        subprocess.call("make")
+    if platform == "linux" or platform == "linux2":
+        
+        if(is_command("valgrind")):
+            subprocess.call(["valgrind", "--leak-check=full", "--show-leak-kinds=all", "./endian_test"])
+            subprocess.call(["valgrind", "--leak-check=full", "--show-leak-kinds=all", "./int_test"])
+            subprocess.call(["valgrind", "--leak-check=full", "--show-leak-kinds=all", "./unicode_test"])
+            subprocess.call(["valgrind", "--leak-check=full", "--show-leak-kinds=all", "./stream_test"])
+        else:
+            subprocess.call(["./endian_test"])
+            subprocess.call(["./int_test"])
+            subprocess.call(["./unicode_test"])
+            subprocess.call(["./stream_test"])
+        
+    elif platform == "darwin":
+
+        if(is_command("leaks")):
+            
+            malloc_stack_logging = False
+
+            if(os.environ.get("MallocStackLogging") != "0"):
+                malloc_stack_logging = True
+
+            # will get changed back but just in case it needs to be set
+            os.environ["MallocStackLogging"] = "1"
+
+            subprocess.call(["leaks", "--atExit", "--list", "--", "./endian_test"])
+            subprocess.call(["leaks", "--atExit", "--list", "--", "./int_test"])
+            subprocess.call(["leaks", "--atExit", "--list", "--", "./unicode_test"])
+            subprocess.call(["leaks", "--atExit", "--list", "--", "./stream_test"])
+
+            if(malloc_stack_logging == False):
+                os.environ["MallocStackLogging"] = "0"
+        else:
+            subprocess.call(["./endian_test"])
+            subprocess.call(["./int_test"])
+            subprocess.call(["./unicode_test"])
+            subprocess.call(["./stream_test"])
+
+
+
     elif platform == "win32":
-        subprocess.call(["MSBuild.exe","/p:DebugType=None","/p:Configuration=Release","endian_test.vcxproj"])
-        subprocess.call(["MSBuild.exe","/p:DebugType=None","/p:Configuration=Release","int_test.vcxproj"])
-        subprocess.call(["MSBuild.exe","/p:DebugType=None","/p:Configuration=Release","unicode_test.vcxproj"])
-        subprocess.call(["MSBuild.exe","/p:DebugType=None","/p:Configuration=Release","stream_test.vcxproj"])
-except OSError as e:
-    if e.errno == errno.ENOENT:
-        #program was not found
-        print("failed to build tests either make or MSbuild was not found in PATH or it was not installed")
-        quit()
-    else:
-        #program output
-        raise
-
-
-#call test execs
-try:
-    if platform == "linux" or platform == "linux2" or "darwin":
-        subprocess.call("./stream_test")
-        #subprocess.call("./unicode_test")
-        #subprocess.call("./endian_test")
-        #subprocess.call("./int_test")
-    elif platform == "win32":
-        if os.path.exists("Release"):
-            os.chdir("Release")
-
-        subprocess.call(".\\endian_bench.exe")
-        subprocess.call(".\\int_bench.exe")
-        subprocess.call(".\\unicode_bench.exe")
-        subprocess.call(".\\stream_bench.exe")
+        subprocess.call("endian_test.exe")
+        subprocess.call("int_test.exe")
+        subprocess.call("unicode_test.exe")
+        subprocess.call("stream_test.exe")
         
 except OSError as e:
     if e.errno == errno.ENOENT:
-        #program was not found
+        # program was not found
         print("failed to run a test")
         quit()
     else:
-        #program output
+        # program output
         raise
+
+update.message("Done!")

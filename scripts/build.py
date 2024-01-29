@@ -1,53 +1,24 @@
-import os
-from sys import platform
-import subprocess
-import errno
-import shutil
+from common.buildHelpers import *
+from common.InformUser import Inform
 
-#mk build
-print("Creating build dir")
-if not os.path.exists("build"):
-    os.mkdir("build")
-else:
-    shutil.rmtree("build")
-    os.mkdir("build")
+update = Inform(1)
 
+# mk build
+update.message("Creating build dir ...")
+replace_folder("build")
 
-#build with cmake
-try:
-    if platform == "linux" or platform == "linux2" or "darwin":
-        subprocess.call(["cmake", "-S", ".", "-B", "./build", "-DBUILD_SHARED_LIBS=ON"])
-    elif platform == "win32":
-        subprocess.call(["cmake", "-S", ".", "-B", ".\\build", "-DBUILD_SHARED_LIBS=ON"])
-
-except OSError as e:
-    if e.errno == errno.ENOENT:
-        #program was not found
-        print("cmake was not found in PATH or not installed")
-        quit()
-    else:
-        #program output
-        raise
-
-
-#build lib
+# build with cmake
+update.message("Running Cmake")
+cmake_build(".", "build", ["-DBUILD_SHARED_LIBS=ON", "-DBUILD_STREAM_DEBUG=OFF"])
+    
+# move to the build folder
+update.message("moving to build dir")
 if os.path.exists("build"):
     os.chdir("build")
 else:
     quit()
 
+update.message("Compiling")
+compile_code("ByteStream")
 
-try:
-    if platform == "linux" or platform == "linux2" or platform == "darwin":
-        subprocess.call("make")
-    elif platform == "win32":
-        subprocess.call(["MSBuild.exe","ByteStream.vcxproj"])
-
-except OSError as e:
-    if e.errno == errno.ENOENT:
-        #program was not found
-        print("failed to build lib either make or MSBuild was not found in PATH or it was not installed")
-        quit()
-    else:
-        #program output
-        raise
+update.message("Done!")

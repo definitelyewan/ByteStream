@@ -6,3 +6,4 @@ main
 output.txt
 build/
 .DS_STORE
+scripts/common/__pycache__
