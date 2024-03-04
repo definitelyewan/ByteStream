@@ -21,6 +21,8 @@
         "stddef.h": "c",
         "windows.h": "c",
         "intrin.h": "c",
-        "bytedefines.h": "c"
+        "assert.h": "c",
+        "bytedefines.h": "c",
+        "byteint.h": "c"
     }
 }

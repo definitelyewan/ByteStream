@@ -21,6 +21,9 @@ extern "C"{
 int btoi(unsigned char *bytes, int byteNum);
 char *itob(int i);
 
+unsigned char *size_ttob(size_t st);
+size_t btosize_t(unsigned char *bytes, int byteNum);
+
 uint8_t setBit(uint8_t n, unsigned int k, bool v);
 int readBit(uint8_t n, unsigned int k);
 

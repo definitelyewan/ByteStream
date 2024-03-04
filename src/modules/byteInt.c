@@ -63,6 +63,53 @@ char *itob(int i){
 }
 
 /**
+ * @brief Converts a size_t to its representation as a unsigned char *.
+ * 
+ * @param st 
+ * @return unsigned char* 
+ */
+unsigned char *size_ttob(size_t st){
+
+    size_t sz = sizeof(size_t);
+    unsigned char *ret = malloc(sizeof(unsigned char) * sz);
+    unsigned char *aux = (unsigned char *) &st;
+
+    // big endian
+    if(!byteEndianess){
+        for(size_t j = 0; j < sz; j++){
+            ret[j] = aux[j];
+        }
+    
+    }else{
+        for(size_t j = sz - 1; j < sz; j--){
+            ret[sz - 1 - j] = aux[j];
+        }
+    }
+
+    return ret;
+}
+
+/**
+ * @brief Converts byteNum bytes from bytes into a size_t. 
+ * 
+ * @param bytes 
+ * @param byteNum 
+ * @return size_t 
+ */
+size_t btosize_t(unsigned char *bytes, int byteNum){
+
+    size_t byteAsSize_t = 0U;
+
+    for(int i = 0; i < byteNum; i++){
+        byteAsSize_t = byteAsSize_t << 8;
+        byteAsSize_t = byteAsSize_t | (unsigned char) bytes[i];
+    }
+
+    return byteAsSize_t;
+}
+
+
+/**
  * @brief set the kth bit of n to value v
  * 
  * @param n 
