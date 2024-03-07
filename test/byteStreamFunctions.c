@@ -777,6 +777,63 @@ static void byteStreamReturnSyncInt_4bytes_Setup(void **state){
     byteStreamDestroy(stream);
 }
 
+static void byteStreamReturnSize_t_4byte(void **state){
+    (void) state;
+
+    if(sizeof(size_t) >= 4){
+
+        ByteStream *stream = byteStreamCreate(NULL, 4);
+
+        byteStreamWrite(stream, (unsigned char *)"\x04\x1B\x7B\x33", 4);
+        byteStreamRewind(stream);
+
+        size_t d = byteStreamReturnSize_t(stream);
+
+        assert_int_equal(d, 68909875);
+        byteStreamDestroy(stream);
+
+    }
+
+}
+
+static void byteStreamReturnSize_t_6byte(void **state){
+    (void) state;
+
+    if(sizeof(size_t) >= 6){
+
+        ByteStream *stream = byteStreamCreate(NULL, 6);
+
+        byteStreamWrite(stream, (unsigned char *)"\x3E\xAC\x54\xAC\xD2\x01", 6);
+        byteStreamRewind(stream);
+
+        size_t d = byteStreamReturnSize_t(stream);
+
+        assert_int_equal(d, 68909875909121);
+        byteStreamDestroy(stream);
+
+    }
+
+}
+
+static void byteStreamReturnSize_t_3byte(void **state){
+    (void) state;
+
+    if(sizeof(size_t) >= 3){
+
+        ByteStream *stream = byteStreamCreate(NULL, 3);
+
+        byteStreamWrite(stream, (unsigned char *)"\xFF\x\xFF\xFF", 3);
+        byteStreamRewind(stream);
+
+        size_t d = byteStreamReturnSize_t(stream);
+
+        assert_int_equal(d,16777215);
+        byteStreamDestroy(stream);
+
+    }
+
+}
+
 static void byteStreamReturnSyncInt_smallStream_Setup(void **state){
     (void) state; //unused
     ByteStream *stream = byteStreamCreate(NULL, 2);
@@ -1029,6 +1086,16 @@ int main(){
         cmocka_unit_test(byteStreamReturnSyncInt_4bytes_Setup),
         cmocka_unit_test(byteStreamReturnSyncInt_smallStream_Setup),
         cmocka_unit_test(byteStreamReturnSyncInt_Fail_Setup),
+
+        //byteStreamReturnSize_t
+        cmocka_unit_test(byteStreamReturnSize_t_4byte),
+        cmocka_unit_test(byteStreamReturnSize_t_6byte),
+        cmocka_unit_test(byteStreamReturnSize_t_3byte),
+
+        /**
+         * u32 function not tested as it has the same logic as byteStreamReturnInt
+         * 
+         */
 
 
         //byteStreamRewind

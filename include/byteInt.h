@@ -24,6 +24,9 @@ char *itob(int i);
 unsigned char *sttob(size_t st);
 size_t btost(unsigned char *bytes, int byteNum);
 
+unsigned char *u32tob(uint32_t u32);
+uint32_t btou32(unsigned char *bytes, int byteNum);
+
 uint8_t setBit(uint8_t n, unsigned int k, bool v);
 int readBit(uint8_t n, unsigned int k);
 

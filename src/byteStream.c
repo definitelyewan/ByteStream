@@ -653,6 +653,69 @@ int byteStreamReturnInt(ByteStream *stream){
 }
 
 /**
+ * @brief Reads a size_t from a stream
+ * 
+ * @param stream 
+ * @return size_t 
+ */
+size_t byteStreamReturnSize_t(ByteStream *stream){
+
+    if(stream == NULL){
+        return 0;
+    }
+
+    int is = sizeof(size_t);
+    uint8_t buff[sizeof(size_t)];
+
+    memset(buff, 0, sizeof(size_t));
+
+    for(int i = 0; i < sizeof(size_t); i++){
+        if(stream->cursor + i == stream->bufferSize){
+            is = i;
+            break;
+        }
+    }
+
+    if(!(byteStreamRead(stream, buff, is))){
+        return 0;
+    }
+
+    return btost(buff, is);
+}
+
+/**
+ * @brief reads a uint32)t from a stream
+ * 
+ * @param stream 
+ * @return uint32_t 
+ */
+uint32_t byteStreamReturnU32(ByteStream *stream){
+
+    if(stream == NULL){
+        return 0;
+    }
+
+    //an u32 is 4 bytes but....
+    int is = 4;
+    uint8_t buff[4] = {0,0,0,0};
+
+    for(int i = 0; i < 4; i++){
+        if(stream->cursor + i == stream->bufferSize){
+            is = i;
+            break;
+        }
+    }
+    
+    if(!(byteStreamRead(stream, buff, is))){
+        return 0;
+    }
+
+
+    return btou32(buff,is);
+
+}
+
+/**
  * @brief returns a decoded sync safe integer from the stream
  * 
  * @param stream 

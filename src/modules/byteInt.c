@@ -108,6 +108,53 @@ size_t btost(unsigned char *bytes, int byteNum){
     return byteAsSize_t;
 }
 
+/**
+ * @brief Converts a unit32_t to its byte representation
+ * 
+ * @param u32 
+ * @return unsigned char* 
+ */
+unsigned char *u32tob(uint32_t u32){
+
+    uint32_t sz = 4;
+    unsigned char *ret = malloc(sizeof(unsigned char) * sz);
+    unsigned char *aux = (unsigned char *) &u32;
+
+    // big endian
+    if(!byteEndianess()){
+        for(size_t j = 0; j < sz; j++){
+            ret[j] = aux[j];
+        }
+    
+    }else{
+        for(size_t j = sz - 1; j < sz; j--){
+            ret[sz - 1 - j] = aux[j];
+        }
+    }
+
+    return ret;
+}
+
+/**
+ * @brief Converts a byte of byteNum bytes to a unit32_t
+ * 
+ * @param bytes 
+ * @param byteNum 
+ * @return uint32_t 
+ */
+uint32_t btou32(unsigned char *bytes, int byteNum){
+
+    size_t byteAsUint32_t = 0U;
+
+    for(int i = 0; i < byteNum; i++){
+        byteAsUint32_t = byteAsUint32_t << 8;
+        byteAsUint32_t = byteAsUint32_t | (unsigned char) bytes[i];
+    }
+
+    return byteAsUint32_t;
+
+
+}
 
 /**
  * @brief set the kth bit of n to value v

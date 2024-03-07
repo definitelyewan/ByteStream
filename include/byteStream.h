@@ -47,6 +47,8 @@ uint8_t *byteStreamReturnUtf8(ByteStream *stream, size_t *outLen);
 uint8_t *byteStreamReturnUtf16(ByteStream *stream, size_t *outLen);
 int byteStreamReturnInt(ByteStream *stream);
 unsigned int byteStreamReturnSyncInt(ByteStream *stream);
+size_t byteStreamReturnSize_t(ByteStream *stream);
+uint32_t byteStreamReturnU32(ByteStream *stream);
 
 //util
 void byteStreamPrintf(const char *formatSpecifier, ByteStream *stream);

@@ -222,6 +222,11 @@ int main(){
         cmocka_unit_test(btost_ffffffffffffffff),
         cmocka_unit_test(btost_1),
 
+        /**
+         * the u32 functions are near identical to btoi and itob so i will not be testing them
+         * legit the only difference is u32 functions use an unsigned char.
+         */
+
         //setBit
         cmocka_unit_test(setBit_allBits_setup),
         cmocka_unit_test(setBit_unsetAllBits_setup),

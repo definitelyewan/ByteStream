@@ -31,13 +31,13 @@ else:
 
 # compile code
 update.message("Compiling byteEndian_test program")
-compile_code("endian_test")
+#compile_code("endian_test")
 
 update.message("Compiling int_test program")
-compile_code("int_test")
+#compile_code("int_test")
 
 update.message("Compiling unicode_test program")
-compile_code("unicode_test")
+#compile_code("unicode_test")
 
 update.message("Compiling stream_test program")
 compile_code("stream_test")

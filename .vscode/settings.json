@@ -23,6 +23,7 @@
         "intrin.h": "c",
         "assert.h": "c",
         "bytedefines.h": "c",
-        "byteint.h": "c"
+        "byteint.h": "c",
+        "byteendian.h": "c"
     }
 }
