@@ -112,6 +112,20 @@ static void btost_1(void **state){
     assert_int_equal(test, 0x01);
 }
 
+static void u32tob_ffffffff(void **state){
+    (void) state;
+
+
+
+    unsigned char *test = u32tob(0xffffffff);
+
+    assert_non_null(test);
+    assert_memory_equal("\xff\xff\xff\xff",test, sizeof(uint32_t));
+    free(test);
+
+    
+}
+
 static void setBit_allBits_setup(void **state){
     (void) state; /* unused */
 
@@ -222,10 +236,8 @@ int main(){
         cmocka_unit_test(btost_ffffffffffffffff),
         cmocka_unit_test(btost_1),
 
-        /**
-         * the u32 functions are near identical to btoi and itob so i will not be testing them
-         * legit the only difference is u32 functions use an unsigned char.
-         */
+        // u32tob
+        cmocka_unit_test(u32tob_ffffffff),
 
         //setBit
         cmocka_unit_test(setBit_allBits_setup),

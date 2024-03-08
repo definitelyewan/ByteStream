@@ -70,18 +70,18 @@ char *itob(int i){
  */
 unsigned char *sttob(size_t st){
 
-    size_t sz = sizeof(size_t);
+    int sz = sizeof(size_t);
     unsigned char *ret = malloc(sizeof(unsigned char) * sz);
     unsigned char *aux = (unsigned char *) &st;
 
     // big endian
     if(!byteEndianess()){
-        for(size_t j = 0; j < sz; j++){
+        for(int j = 0; j < sz; j++){
             ret[j] = aux[j];
         }
     
     }else{
-        for(size_t j = sz - 1; j < sz; j--){
+        for(int j = sz - 1; j >= 0; j--){
             ret[sz - 1 - j] = aux[j];
         }
     }
@@ -116,18 +116,18 @@ size_t btost(unsigned char *bytes, int byteNum){
  */
 unsigned char *u32tob(uint32_t u32){
 
-    uint32_t sz = 4;
+    int sz = 4;
     unsigned char *ret = malloc(sizeof(unsigned char) * sz);
     unsigned char *aux = (unsigned char *) &u32;
 
     // big endian
     if(!byteEndianess()){
-        for(size_t j = 0; j < sz; j++){
+        for(int j = 0; j < sz; j++){
             ret[j] = aux[j];
         }
     
     }else{
-        for(size_t j = sz - 1; j < sz; j--){
+        for(int j = sz - 1; j >= 0; j--){
             ret[sz - 1 - j] = aux[j];
         }
     }

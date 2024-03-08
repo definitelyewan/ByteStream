@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(ByteStream VERSION 1.3.1.0)
+project(ByteStream VERSION 1.3.2.0)
 
 option(BUILD_SHARED_LIBS "building a shared lib" OFF)
 option(BUILD_TESTS "build tests" OFF)

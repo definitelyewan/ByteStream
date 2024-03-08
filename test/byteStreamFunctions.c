@@ -822,7 +822,7 @@ static void byteStreamReturnSize_t_3byte(void **state){
 
         ByteStream *stream = byteStreamCreate(NULL, 3);
 
-        byteStreamWrite(stream, (unsigned char *)"\xFF\x\xFF\xFF", 3);
+        byteStreamWrite(stream, (unsigned char *)"\xFF\xFF\xFF", 3);
         byteStreamRewind(stream);
 
         size_t d = byteStreamReturnSize_t(stream);
