@@ -144,7 +144,7 @@ unsigned char *u32tob(uint32_t u32){
  */
 uint32_t btou32(unsigned char *bytes, int byteNum){
 
-    size_t byteAsUint32_t = 0U;
+    uint32_t byteAsUint32_t = 0U;
 
     for(int i = 0; i < byteNum; i++){
         byteAsUint32_t = byteAsUint32_t << 8;
