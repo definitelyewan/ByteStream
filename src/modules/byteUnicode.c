@@ -226,7 +226,7 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
             break;
         case BYTE_UTF16BE:
 
-            sampleOutLen = inLen; //guess and will be shrunk later
+            sampleOutLen = (inLen < 10) ? 10 : inLen; //guess and will be shrunk later
 
             tmp = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
             
@@ -240,8 +240,7 @@ bool byteConvertTextFormat(unsigned char *in, unsigned char inEncoding, size_t i
 
             break;
         case BYTE_UTF16LE:
-
-            sampleOutLen = inLen; //guess and will be shrunk later
+            sampleOutLen = (inLen < 10) ? 10 : inLen; //guess and will be shrunk later
 
             tmp = calloc(sizeof(unsigned char), sampleOutLen + BYTE_PADDING);
 
