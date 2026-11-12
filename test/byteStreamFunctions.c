@@ -657,7 +657,7 @@ static void byteStreamReturnAscii_FailOnDoubleNull_Setup(void **state){
 
     unsigned char b[] = "ascii\0\0test";
     unsigned char *read = NULL;
-    size_t s = 16;
+    size_t s = sizeof(b);
     size_t out = 0;
 
     ByteStream *stream = byteStreamCreate(b, s);
@@ -726,7 +726,7 @@ static void byteStreamReturnUtf16_FullBuffer_Setup(void **state){
 
     unsigned char b[] = "u\0t\0f\0 \0w\0o\0r\0d\0 \0t\0e\0s\0t\0\0";
     unsigned char *read = NULL;
-    size_t s = 30;
+    size_t s = sizeof(b);
     size_t out = 0;
 
     ByteStream *stream = byteStreamCreate(b, s);
@@ -854,7 +854,7 @@ static void byteStreamRewind_Normal_Setup(void **state){
     (void) state; //unused
 
     unsigned char b[] = "u\0t\0f\0 \0w\0o\0r\0d\0 \0t\0e\0s\0t\0\0";
-    size_t s = 30;
+    size_t s = sizeof(b);
     ByteStream *stream = byteStreamCreate(b, s);
     byteStreamSeek(stream, 15, SEEK_SET);
     bool v = byteStreamRewind(stream);

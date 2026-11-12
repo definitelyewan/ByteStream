@@ -7,6 +7,9 @@ option(BUILD_BENCHMARKS "build benchmarks" OFF)
 option(BUILD_DOCS "build documentation" OFF)
 option(BUILD_STREAM_DEBUG "compiles with debug symbols" ON)
 
+set(BYTE_SANITIZER "" CACHE STRING "Sanitizer to build with: address (ASan+UBSan) or thread (TSan)")
+set_property(CACHE BYTE_SANITIZER PROPERTY STRINGS "" address thread)
+
 set(BYTESTREAM_HEADERS
   "${CMAKE_CURRENT_SOURCE_DIR}/include/byteDefines.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/include/byteTypes.h"
@@ -32,6 +35,17 @@ if(BUILD_STREAM_DEBUG)
     add_compile_options("-Wall")
     add_compile_options("-g")
   endif()
+endif()
+
+if(BYTE_SANITIZER STREQUAL "address")
+  set(BYTE_SAN_FLAGS -fsanitize=address,undefined)
+elseif(BYTE_SANITIZER STREQUAL "thread")
+  set(BYTE_SAN_FLAGS -fsanitize=thread)
+endif()
+
+if(BYTE_SAN_FLAGS)
+  add_compile_options(${BYTE_SAN_FLAGS} -fno-omit-frame-pointer -fno-optimize-sibling-calls -g)
+  add_link_options(${BYTE_SAN_FLAGS})
 endif()
 
 

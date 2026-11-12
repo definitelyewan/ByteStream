@@ -380,19 +380,13 @@ bool byteHasBOM(const unsigned char *utf){
  * @return true 
  * @return false 
  */
-bool bytePrependBOM(unsigned char encoding, unsigned char **utf, size_t *utfLen){
-
-    if(utf == NULL || *utfLen < 2){
-        //do not change utflen
-        return false;
-    }
-
-    if(*utf == NULL){
+bool bytePrependBOM(unsigned char encoding, unsigned char **utf, size_t *utfLen) {
+    if(utf == NULL || *utf == NULL || utfLen == NULL || *utfLen < 2){
         return false;
     }
 
     unsigned char bom[BYTE_BOM_SIZE];
-    
+
     if(encoding == BYTE_UTF16BE){
         bom[0] = 0xfe;
         bom[1] = 0xff;
@@ -403,15 +397,27 @@ bool bytePrependBOM(unsigned char encoding, unsigned char **utf, size_t *utfLen)
         return false;
     }
 
-    *utfLen += BYTE_BOM_SIZE;
-    *utf = realloc(*utf, *utfLen + BYTE_PADDING);
-    
-    memcpy((*utf + BYTE_BOM_SIZE), *utf, (*utfLen) - BYTE_BOM_SIZE);
-    memcpy(*utf, bom, BYTE_BOM_SIZE);
+    // reject lengths that would overflow the allocation size
+    if(*utfLen > SIZE_MAX - BYTE_BOM_SIZE - BYTE_PADDING){
+        return false;
+    }
 
+    size_t oldLen = *utfLen;
+    size_t newLen = oldLen + BYTE_BOM_SIZE;
+
+    unsigned char *tmp = realloc(*utf, newLen + BYTE_PADDING);
+    if(tmp == NULL){
+        return false;   // original buffer and length left untouched
+    }
+    *utf = tmp;
+
+    memmove(*utf + BYTE_BOM_SIZE, *utf, oldLen);
+    memcpy(*utf, bom, BYTE_BOM_SIZE);
+    memset(*utf + newLen, 0, BYTE_PADDING);
+
+    *utfLen = newLen;
     return true;
 }
-
 /**
  * @brief Attempts to convert a ascii string to a utf8 string.
  * @details This function takes an input string, in and its size as inlen and attempts to convert it 
