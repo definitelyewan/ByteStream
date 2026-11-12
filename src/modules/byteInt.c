@@ -23,14 +23,11 @@
  * @return int 
  */
 int btoi(unsigned char *bytes, int byteNum){
-    
-    int byteAsInt = 0x00;
+    uint32_t byteAsInt = 0;
     for(int i = 0; i < byteNum; i++){
-        byteAsInt = byteAsInt << 8;
-        byteAsInt = byteAsInt | (unsigned char) bytes[i];
+        byteAsInt = (byteAsInt << 8) | bytes[i];
     }
-
-    return byteAsInt;	  
+    return (int) byteAsInt;
 }
 
 /**
